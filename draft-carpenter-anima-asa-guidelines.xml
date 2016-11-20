@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This is built from a template for a generic Internet Draft. Suggestions for
+     improvement welcome - write to Brian Carpenter, brian.e.carpenter @ gmail.com 
+     This can be converted using the Web service at https://xml2rfc.tools.ietf.org/ -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd">
+<?rfc toc="yes"?>
+<!-- You want a table of contents -->
+<?rfc symrefs="yes"?>
+<!-- Use symbolic labels for references -->
+<?rfc sortrefs="yes"?>
+<!-- This sorts the references -->
+<?rfc iprnotified="no" ?>
+<!-- Change to "yes" if someone has disclosed IPR for the draft -->
+<?rfc compact="yes"?>
+<!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
+<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-01" ipr="trust200902">
+  <front>
+    <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
+
+    <author fullname="Brian Carpenter" initials="B. E." surname="Carpenter">
+      <organization abbrev="Univ. of Auckland"/>
+      <address>
+        <postal>
+          <street>Department of Computer Science</street>
+          <street>University of Auckland</street>
+          <street>PB 92019</street>
+          <city>Auckland</city>
+          <region/>
+          <code>1142</code>
+          <country>New Zealand</country>
+        </postal>
+        <email>brian.e.carpenter@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Sheng Jiang" initials="S." surname="Jiang">
+      <organization>Huawei Technologies Co., Ltd</organization>
+      <address>
+        <postal>
+          <street>Q14, Huawei Campus, No.156 Beiqing Road</street>
+          <city>Hai-Dian District, Beijing, 100095</city>
+          <country>P.R. China</country>
+        </postal>
+        <email>jiangsheng@huawei.com</email>
+      </address>
+    </author>
+
+    <date day="20" month="November" year="2016"/>
+
+    <abstract>
+      <t>This document proposes guidelines for the design of Autonomic Service Agents
+      for autonomic networks. It is based on the Autonomic Network
+      Infrastructure outlined in the ANIMA reference model, making use of
+      the Autonomic Control Plane and the Generic Autonomic Signaling Protocol.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="intro" title="Introduction">
+      <t>
+      This document proposes guidelines for the design of Autonomic Service Agents
+     (ASAs) in the context of an Autonomic Network (AN) based on the Autonomic Network
+     Infrastructure (ANI) outlined in the ANIMA reference model <xref target="I-D.ietf-anima-reference-model"/>.
+     This infrastructure makes use of
+     the Autonomic Control Plane (ACP) <xref target="I-D.ietf-anima-autonomic-control-plane"/> and
+     the Generic Autonomic Signaling Protocol (GRASP) <xref target="I-D.ietf-anima-grasp"/>.
+     </t>
+      
+    <t>There is a considerable literature about autonomic agents with a variety of
+    proposals about how they should be characterized. Some examples are 
+    <xref target="DeMola06"/>,
+    <xref target="Huebscher08"/>,    
+    <xref target="Movahedi12"/> and
+    <xref target="GANA13"/>. However, for the present document,
+    the basic definitions and goals for autonomic networking given in <xref target="RFC7575"/>
+    apply . According to RFC 7575, an Autonomic Service Agent is
+    "An agent implemented
+    on an autonomic node that implements an autonomic function, either in part
+    (in the case of a distributed function) or whole."</t>
+         
+    <t>The reference model <xref target="I-D.ietf-anima-reference-model"/> expands
+    this by adding that an ASA is
+     "a process that makes use of the features provided
+     by the ANI to achieve its own goals, usually including interaction
+     with other ASAs via the GRASP protocol <xref target="I-D.ietf-anima-grasp"/> or
+     otherwise.  Of course it also interacts with the specific targets of
+     its function, using any suitable mechanism.  Unless its function is
+     very simple, the ASA will need to be multi-threaded so that it can
+     handle overlapping asynchronous operations.  It may therefore be a
+     quite complex piece of software in its own right, forming part of the
+     application layer above the ANI."</t>
+     
+     <t>A basic property of an ASA is that it is a relatively complex software
+     component that will in many cases control and monitor simpler entities
+     in the same host or elsewhere. For example, a device controller that manages
+     tens or hundreds of simple devices might contain a single ASA. </t>
+     
+     <t>The remainder of this document offers guidance on the design of ASAs.</t>
+     
+     <t>NOTE: This is an early version of this document. It is expected to grow considerably. </t>
+
+    </section>
+
+    <section anchor="structure" title="Logical Structure of an Autonomic Service Agent">
+    <t>As mentioned above, all but the simplest ASAs will be multi-threaded programs.</t>
+    <t>A typical ASA will have a main thread that performs various initial housekeeping actions such as:
+    <list style="symbols">
+    <t>Obtain authorization credentials.</t>
+    <t>Register the ASA with GRASP.</t>
+    <t>Acquire relevant policy Intent.</t>
+    <t>Define data structures for relevant GRASP objectives.</t>
+    <t>Register with GRASP those objectives that it will actively manage.</t>
+    <t>Launch a self-monitoring thread.</t>
+    <t>Enter its main loop.</t>
+    </list>
+    </t>
+    <t>The logic of the main loop will depend on the details of the autonomic function concerned.
+    Whenever asynchronous operations are required, extra threads will be launched. Examples of
+    such threads include:
+    <list style="symbols">
+    <t>A background thread to repeatedly flood an objective to the AN, so that any ASA can receive the objective's latest value.</t>
+    <t>A thread to accept incoming synchronization requests for an objective managed by this ASA.</t>
+    <t>A thread to accept incoming negotiation requests for an objective managed by this ASA,
+    and then to conduct the resulting negotiation with the counterpart ASA.</t>
+    <t>A thread to manage subsidiary non-autonomic devices directly.</t>
+    </list></t>
+    <t>These threads should all either exit after their job is done, or enter a wait state for new work, to avoid
+    blocking other threads unnecessarily.</t>
+    <t>According to the degree of parallelism needed by the application, some of these threads might be
+    launched in multiple instances. In particular, if negotiation sessions with other ASAs are expected to
+    be long or to involve wait states, the ASA designer might allow for multiple simultaneous negotiating
+    threads, with appropriate use of queues and locks to maintain consistency.</t>
+    <t>The main loop itself could act as the initiator of synchronization requests or negotiation
+    requests, when the ASA needs data or resources from other ASAs. In particular, the main loop should
+    watch for changes in policy Intent that affect its operation. It should also do whatever is required
+    to avoid unnecessary resource consumption, such as including an arbitrary wait time in each cycle
+    of the main loop.</t>
+    
+    <t>The self-monitoring thread is of considerable importance. Autonomic service agents must never fail.
+    To a large extent this depends on careful coding and testing, with no unhandled error returns or exceptions, but if
+    there is nevertheless some sort of failure, the self-monitoring thread should detect it, fix it
+    if possible, and in the worst case restart the entire ASA.</t>
+    
+    
+    
+    </section>
+    
+    <section anchor="interact" title="Interaction with the Autonomic Infrastructure">
+     <section title="Interaction with the security mechanisms">
+     <t>TBD</t>
+     </section>
+     
+     <section title="Interaction with the ACP">
+     <t>TBD</t>
+     </section>
+    
+     <section title="Interaction with GRASP and its API">
+     <t>GRASP <xref target="I-D.ietf-anima-grasp"/> is expected to run as an operating system kernel module
+     with its API <xref target="I-D.liu-anima-grasp-api"/> available in user space. Thus ASAs may operate without
+     special privilege, unless they need it for other reasons. The ASA's view of GRASP is built around GRASP
+     objectives (<xref target="objdes"/>), defined as data structures containing administrative information
+     such as the objective's unique name, and its current value. The format and size of the value is not
+     restricted by the protocol, except that it must be possible to serialise it for transmission in 
+     CBOR <xref target="RFC7049"/>, which is no restriction at all in practice.</t>
+     
+     <t>The GRASP API offers the following features:
+     <list style="symbols">
+     <t>Registration functions, so that an ASA can register itself and the objectives that it manages.</t>
+     <t>A discovery function, by which an ASA can discover other ASAs supporting a given objective.</t>
+     <t>A negotiation request function, by which an ASA can start negotiation of an objective with a counterpart ASA.
+     With this, there is a corresponding listening function for an ASA that wishes to respond to negotiation requests,
+     and a set of functions to support negotiating steps.</t>
+     <t>A synchronization function, by which an ASA can request the current value of an objective from a counterpart ASA.
+     With this, there is a corresponding listening function for an ASA that wishes to respond to synchronization requests.</t>
+     <t>A flood function, by which an ASA can cause the current value of an objective to be flooded throughout the AN
+     so that any ASA can receive it.</t>
+     </list>
+     </t>
+     <t>For further details and some additional housekeeping functions, see <xref target="I-D.liu-anima-grasp-api"/>.
+     </t>
+     <t>This API is intended to support the various interactions expected between most ASAs, such as the
+     interactions outlined in <xref target="structure"/>. However, if ASAs
+     require additional communication between themselves, they can do so using any desired protocol. One option is
+     to use GRASP discovery and synchronization as a rendez-vous mechanism between two ASAs, passing communication
+     parameters such as a TCP port number as the value of a GRASP objective.</t>
+     </section>
+     
+     <section title="Interaction with Intent mechanism">
+     <t>TBD</t>
+     </section>
+
+    </section>
+    
+    <section anchor="objdes" title="Design of GRASP Objectives">
+    <t>TBD</t>
+    </section>
+    
+    <section anchor="life" title="Life Cycle">
+    <t>TBD, citing "A Day in the Life of an Autonomic Function" <xref target="I-D.peloso-anima-autonomic-function"/>.</t>
+    </section>
+    
+    <section anchor="coord" title="Coordination">
+    <t>TBD, citing "Autonomic Functions Coordination" <xref target="I-D.ciavaglia-anima-coordination"/>.</t>
+    </section>
+    
+  
+    
+
+    <section anchor="security" title="Security Considerations">
+      <t>TBD.
+      Authorization of ASAs is a subject for future study.</t>
+    </section>
+
+    <section anchor="iana" title="IANA Considerations">
+      <t>This document makes no request of the IANA.</t>
+
+      <t/>
+    </section>
+
+    <section anchor="ack" title="Acknowledgements">
+      <t>TBD.</t>
+    </section>
+  </middle>
+  <back>
+     
+  
+    
+    <references title="Normative References">
+      <?rfc include='reference.RFC.7049'?>
+      <?rfc include='reference.I-D.ietf-anima-autonomic-control-plane'?>
+      <?rfc include='reference.I-D.ietf-anima-grasp'?>
+    </references>
+
+    <references title="Informative References">
+    
+      <?rfc include='reference.RFC.7575'?>
+      <?rfc include='reference.I-D.ietf-anima-reference-model'?>
+      <?rfc include='reference.I-D.peloso-anima-autonomic-function'?>
+      <?rfc include='reference.I-D.ciavaglia-anima-coordination'?>
+      <?rfc include='reference.I-D.liu-anima-grasp-api'?>
+      
+      
+      <reference anchor="DeMola06">
+        <front>
+          <title>An Agent Model for Future Autonomic Communications</title>
+          <author initials="F." surname="De Mola"/>
+          <author initials="R." surname="Quitadamo"/>
+          <date month="September" year="2006"/>
+        </front>
+        <seriesInfo name="Proceedings of the 7th WOA 2006 Workshop From Objects to Agents" value="51-59"/>
+      </reference>
+
+
+      <reference anchor="Huebscher08">
+        <front>
+          <title>A survey of autonomic computing&#8212;degrees, models, and applications</title>
+          <author initials="M. C." surname="Huebscher"/>
+          <author initials="J. A." surname="McCann"/>
+          <date month="August" year="2008"/>
+        </front>
+        <seriesInfo name="ACM Computing Surveys (CSUR)" value="Volume 40 Issue 3 DOI: 10.1145/1380584.1380585"/>
+      </reference>
+
+      
+      <reference anchor="Movahedi12">
+        <front>
+          <title>A Survey of Autonomic Network Architectures and Evaluation Criteria</title>
+          <author initials="Z." surname="Movahedi"/>
+          <author initials="M." surname="Ayari"/>
+          <author initials="R." surname="Langar"/>
+          <author initials="G." surname="Pujolle"/>
+          <date year="2012"/>
+        </front>
+        <seriesInfo name="IEEE Communications Surveys &amp; Tutorials" value="Volume: 14 , Issue: 2 DOI: 10.1109/SURV.2011.042711.00078, Page(s): 464 &#8211; 490"/>
+      </reference>
+      
+      <reference anchor="GANA13" target="http://www.etsi.org/deliver/etsi_gs/AFI/001_099/002/01.01.01_60/gs_afi002v010101p.pdf">
+        <front>
+          <title>Autonomic network engineering for the self-managing Future Internet (AFI): GANA Architectural Reference Model for Autonomic Networking, Cognitive Networking and Self-Management. </title>
+          <author surname="ETSI GS AFI 002"/>
+          <date month="April" year="2013"/>
+        </front>
+      </reference>      
+      
+    </references>
+    
+  <section anchor="changes" title="Change log [RFC Editor: Please remove]">
+    <t>draft-carpenter-anima-asa-guidelines-01, 2016-11-xx:
+      <vspace blankLines="1"/>
+       TBD</t>  
+    <t>draft-carpenter-anima-asa-guidelines-00, 2016-09-30:
+      <vspace blankLines="1"/>
+       Initial version</t>  
+    </section>   
+  </back>
+</rfc>
