@@ -13,7 +13,7 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-02" ipr="trust200902">
+<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-03" ipr="trust200902">
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
 
@@ -45,7 +45,7 @@
       </address>
     </author>
 
-    <date day="1" month="July" year="2017"/>
+    <date day="2" month="October" year="2017"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -258,6 +258,42 @@
     "Autonomic Functions Coordination" <xref target="I-D.ciavaglia-anima-coordination"/>.</t>
     </section>
     
+    <section anchor="robust" title="Robustness">
+    <t>It is of great importance that all components of an autonomic system are highly robust.
+    In principle they must never fail. This section lists various aspects of robustness 
+    that ASA designers should consider.
+    <list style="numbers">
+    <t>If despite all precautions, an ASA does encounter a fatal error, it should
+    in any case restart automatically and try again.
+    To mitigate a hard loop in case of persistent failure, a suitable pause
+    should be inserted before such a restart. The length of the pause depends
+    on the use case.</t>
+    <t>If a newly received or calculated value for a parameter falls out of bounds, the corresponding
+    parameter should be either left unchanged or restored to a safe value.</t>
+    <t>If a GRASP synchronization or negotiation session fails for any reason,
+    it may be repeated after a suitable pause. The length of the pause depends
+    on the use case.</t>
+    <t>If a session fails repeatedly, the ASA should consider that its peer has failed,
+    and cause GRASP to flush its discovery cache and repeat peer discovery. </t>
+    <t>Any received GRASP message should be checked. If it is wrongly formatted,
+    it should be ignored. Within a unicast session, an Invalid message (M_INVALID)
+    may be sent. This function may be provided by the GRASP implementation itself.</t>
+    <t>Any received GRASP objective should be checked. If it is wrongly formatted,
+    it should be ignored. Within a negotiation session, a Negotiation End
+    message (M_END) with a Decline option (O_DECLINE) should be sent. An ASA may
+    log such events for diagnostic purposes.</t>
+    <t>If an ASA receives either an Invalid message (M_INVALID) or a Negotiation End
+    message (M_END) with a Decline option (O_DECLINE), one possible reason is that
+    the peer ASA does not support a new feature of either GRASP or of the objective
+    in question. In such a case the ASA may choose to repeat the operation concerned
+    without using that new feature.
+    </t>
+    <t>All other possible exceptions should be handled in an orderly way. There should be no such
+    thing as an unhandled exception (but see point 1 above).</t>
+    
+    </list></t>
+    </section>
+    
   
     
 
@@ -350,7 +386,9 @@
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-  
+    <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-02:
+      <vspace blankLines="1"/>
+      </t>
     <t>draft-carpenter-anima-asa-guidelines-02, 2017-07-01:
       <vspace blankLines="1"/>
        Expanded description of event-loop case.
