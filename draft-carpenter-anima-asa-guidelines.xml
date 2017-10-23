@@ -32,6 +32,20 @@
         <email>brian.e.carpenter@gmail.com</email>
       </address>
     </author>
+    
+    <author fullname="Laurent Ciavaglia" initials="L." surname="Ciavaglia">
+			<organization>Alcatel-Lucent</organization>
+			<address>
+				<postal>
+					<street>Villarceaux</street>
+					<code>91460</code>
+					<city>Nozay</city>
+					<region/>
+					<country>FR</country>
+				</postal>
+				<email>laurent.ciavaglia@alcatel-lucent.com</email>
+			</address>
+		</author>
 
     <author fullname="Sheng Jiang" initials="S." surname="Jiang">
       <organization>Huawei Technologies Co., Ltd</organization>
@@ -45,7 +59,7 @@
       </address>
     </author>
 
-    <date day="2" month="October" year="2017"/>
+    <date day="24" month="October" year="2017"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -248,8 +262,8 @@
     part of the ASA's design.</t>
 	<t>The implication of service continuity on the design of ASAs can be illustrated along the three
 	main phases of the ASA life-cycle, namely Installation, Instantiation and Operation.</t>
-	<figure anchor="Fig_LC" title="Life cycle of an Autonomic Service Agent" align='center'>
-		<artwork  align='center'>
+	<figure anchor="Fig_LC" title="Life cycle of an Autonomic Service Agent" align="center">
+		<artwork align="center">
 	<![CDATA[
                   +--------------+
 Undeployed ------>|              |------> Undeployed
@@ -515,13 +529,18 @@ Undeployed ------>|              |------> Undeployed
           <author surname="ETSI GS AFI 002"/>
           <date month="April" year="2013"/>
         </front>
-      </reference>      
+      </reference>
       
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-02:
+    <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-24:
       <vspace blankLines="1"/>
+      Added details on life cycle.
+      <vspace blankLines="1"/>
+      Added details on robustness.
+      <vspace blankLines="1"/>
+      Added co-author.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-02, 2017-07-01:
       <vspace blankLines="1"/>
