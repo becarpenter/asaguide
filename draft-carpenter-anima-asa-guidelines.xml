@@ -13,7 +13,7 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-03" ipr="trust200902">
+<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-04" ipr="trust200902">
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
 
@@ -34,7 +34,7 @@
     </author>
     
     <author fullname="Laurent Ciavaglia" initials="L." surname="Ciavaglia">
-			<organization>Alcatel-Lucent</organization>
+			<organization>Nokia</organization>
 			<address>
 				<postal>
 					<street>Villarceaux</street>
@@ -43,7 +43,7 @@
 					<region/>
 					<country>FR</country>
 				</postal>
-				<email>laurent.ciavaglia@alcatel-lucent.com</email>
+				<email>laurent.ciavaglia@nokia.com</email>
 			</address>
 		</author>
 
@@ -58,8 +58,22 @@
         <email>jiangsheng@huawei.com</email>
       </address>
     </author>
+    
+        <author fullname="Pierre Peloso" initials="P." surname="Peloso">
+			<organization>Nokia</organization>
+			<address>
+				<postal>
+					<street>Villarceaux</street>
+					<code>91460</code>
+					<city>Nozay</city>
+					<region/>
+					<country>FR</country>
+				</postal>
+				<email>pierre.peloso@nokia.com</email>
+			</address>
+		</author>
 
-    <date day="24" month="October" year="2017"/>
+    <date day="xx" month="xxxxxxx" year="2017"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -291,7 +305,7 @@ Undeployed ------>|              |------> Undeployed
 	in a set of Installation Hosts.</t>
 	<t>There are 3 properties applicable to the installation of ASAs:
 		<list style="hanging">
-		<t hangText="The dynamic installation property"> allows installing an ASA on demand, on any	hosts compatible with the ASA.</t>
+		<t hangText="The dynamic installation property">allows installing an ASA on demand, on any	hosts compatible with the ASA.</t>
 		<t hangText="The decoupling property">allows controlling resources of a NE from a remote ASA, i.e. an ASA installed on a host machine different from the resources' NE.</t>
 		<t hangText="The multiplicity property">allows controlling multiple sets of resources from a single ASA.</t>
 		</list>
@@ -534,13 +548,16 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-24:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2017-xx-xx:
+      <vspace blankLines="1"/>
+      </t>
+    <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
       <vspace blankLines="1"/>
       Added details on life cycle.
       <vspace blankLines="1"/>
       Added details on robustness.
       <vspace blankLines="1"/>
-      Added co-author.
+      Added co-authors.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-02, 2017-07-01:
       <vspace blankLines="1"/>
