@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="xx" month="xxxxxxx" year="2017"/>
+    <date day="1" month="January" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -106,6 +106,12 @@
     "An agent implemented
     on an autonomic node that implements an autonomic function, either in part
     (in the case of a distributed function) or whole."</t>
+    
+    <t>ASAs must be distinguished from other forms of software component. They are
+    components of network or service management; they do not in themselves provide
+    services. For example, the services envisaged for network function virtualisation
+    [reference needed] or for service function chaining <xref target="RFC7665"/>
+    might be managed by an ASA rather than by traditional configuration tools.</t>
          
     <t>The reference model <xref target="I-D.ietf-anima-reference-model"/> expands
     this by adding that an ASA is
@@ -114,17 +120,19 @@
      with other ASAs via the GRASP protocol <xref target="I-D.ietf-anima-grasp"/> or
      otherwise.  Of course it also interacts with the specific targets of
      its function, using any suitable mechanism.  Unless its function is
-     very simple, the ASA will need to be multi-threaded so that it can
-     handle overlapping asynchronous operations.  It may therefore be a
-     quite complex piece of software in its own right, forming part of the
-     application layer above the ANI."</t>
+     very simple, the ASA will need to handle overlapping asynchronous operations.
+     It may therefore be a quite complex piece of software in its own right,
+     forming part of the application layer above the ANI."</t>
      
-     <t>A basic property of an ASA is that it is a relatively complex software
+     <t>There will certainly be very simple ASAs that manage a single
+     objective in a straightforward way and do not asynchronous operations.
+     In such a case, many aspects of the current document do not apply. However, in
+     general a basic property of an ASA is that it is a relatively complex software
      component that will in many cases control and monitor simpler entities
      in the same host or elsewhere. For example, a device controller that manages
      tens or hundreds of simple devices might contain a single ASA. </t>
      
-     <t>The remainder of this document offers guidance on the design of ASAs.</t>
+     <t>The remainder of this document offers guidance on the design of such ASAs.</t>
      
   
 
@@ -155,10 +163,10 @@
     </list></t>
     <t>These threads should all either exit after their job is done, or enter a wait state for new work, to avoid
     blocking other threads unnecessarily.</t>
-    <t>Note: If the programming environment does not support multi-threading, an 'event loop' style of
+    <t>Not all programming environments explicitly support multi-threading. In such cases, an 'event loop' style of
     implementation could be adopted, in which case each of the above threads would be implemented as an event handler
     called in turn by the main loop. In this case, the GRASP API (<xref target="api"/>) must provide
-    non-blocking calls. If necessary, the GRASP session identifier will be used to distinguish simultaneous negotiations.
+    non-blocking calls. If necessary, the GRASP session identifier will be used to distinguish simultaneous operations.
     </t>
     <t>According to the degree of parallelism needed by the application, some of these threads might be
     launched in multiple instances. In particular, if negotiation sessions with other ASAs are expected to
@@ -204,7 +212,7 @@
      restricted by the protocol, except that it must be possible to serialise it for transmission in 
      CBOR <xref target="RFC7049"/>, which is no restriction at all in practice.</t>
      
-     <t>The GRASP API offers the following features:
+     <t>The GRASP API should offer the following features:
      <list style="symbols">
      <t>Registration functions, so that an ASA can register itself and the objectives that it manages.</t>
      <t>A discovery function, by which an ASA can discover other ASAs supporting a given objective.</t>
@@ -223,7 +231,7 @@
      interactions outlined in <xref target="structure"/>. However, if ASAs
      require additional communication between themselves, they can do so using any desired protocol. One option is
      to use GRASP discovery and synchronization as a rendez-vous mechanism between two ASAs, passing communication
-     parameters such as a TCP port number as the value of a GRASP objective. As noted above, either the ACP or
+     parameters such as a TCP port number via GRASP. As noted above, either the ACP or
      in special cases the autonomic key infrastructure will be used to secure such communications.</t>
      </section>
      
@@ -412,13 +420,18 @@ Undeployed ------>|              |------> Undeployed
 	</section>
 	</section>
     
-    <section anchor="coord" title="Coordination">
+    <section anchor="coorda" title="Coordination between Autonomic Functions">
     <t>Some autonomic functions will be completely independent of each other. However, others are
     at risk of interfering with each other - for example, two different optimization functions
     might both attempt to modify the same underlying parameter in different ways. In a complete
     system, a method is needed of identifying ASAs that might interfere with each other and
     coordinating their actions when necessary. This issue is considered in
     "Autonomic Functions Coordination" <xref target="I-D.ciavaglia-anima-coordination"/>.</t>
+    </section>
+    
+    <section anchor="coordt" title="Coordination with Traditional Management Functions">
+    <t>TBD. How to avoid clashes with traditional tools (CLI, NETCONF,...)? How to integrate
+    with the YANG world?</t>
     </section>
     
     <section anchor="robust" title="Robustness">
@@ -479,7 +492,9 @@ Undeployed ------>|              |------> Undeployed
     </section>
 
     <section anchor="ack" title="Acknowledgements">
-      <t>TBD.</t>
+      <t>Useful comments were received from
+      Bing Liu,
+      and other members of the ANIMA WG.</t>
     </section>
   </middle>
   <back>
@@ -497,6 +512,7 @@ Undeployed ------>|              |------> Undeployed
     
       <?rfc include='reference.RFC.7575'?>
       <?rfc include='reference.RFC.6973'?>
+      <?rfc include='reference.RFC.7665'?>
       <?rfc include='reference.I-D.ietf-anima-reference-model'?>
       <?rfc include='reference.I-D.peloso-anima-autonomic-function'?>
       <?rfc include='reference.I-D.ciavaglia-anima-coordination'?>
@@ -548,8 +564,15 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-04, 2017-xx-xx:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2018-01-01:
       <vspace blankLines="1"/>
+      Added note about simple ASAs.
+      <vspace blankLines="1"/>
+      Added note about NFV/SFC services.
+      <vspace blankLines="1"/>
+      Improved text about threading v event loop model
+      <vspace blankLines="1"/>
+      Added blank section about clash with traditional tools.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
       <vspace blankLines="1"/>
