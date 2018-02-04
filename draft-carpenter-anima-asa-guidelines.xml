@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="1" month="January" year="2018"/>
+    <date day="2" month="February" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -564,7 +564,7 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-04, 2018-01-01:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2018-01-02:
       <vspace blankLines="1"/>
       Added note about simple ASAs.
       <vspace blankLines="1"/>
@@ -573,6 +573,8 @@ Undeployed ------>|              |------> Undeployed
       Improved text about threading v event loop model
       <vspace blankLines="1"/>
       Added blank section about clash with traditional tools.
+      <vspace blankLines="1"/>
+      Added appendix with example logic flows
       </t>
     <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
       <vspace blankLines="1"/>
@@ -593,6 +595,106 @@ Undeployed ------>|              |------> Undeployed
     <t>draft-carpenter-anima-asa-guidelines-00, 2016-09-30:
       <vspace blankLines="1"/>
        Initial version</t>  
-    </section>   
+    </section>
+    
+    <section title="Example Logic Flows">
+    <t>This appendix outlines logic flows for a general purpose resource management ASA.
+    It is assumed that all ASA instances managing this resource use the same logic. However,
+    one instance acts as a master, initialised with a resource pool and a set
+    of policy parameters. The ASA uses a notional objective EX1 and an associated
+    policy parameters objective EX1.Params.</t>
+    
+    <section title="Threaded Example">   
+    
+    <t><figure>
+          <artwork align="center"><![CDATA[
+MAIN Thread:
+
+Create empty resource pool
+Decide whether to act as master
+if master:
+  Obtain initial resources from NOC and add to pool
+  Obtain EX1.Params values from NOC, or use default values
+Register ASA with GRASP
+Register objectives EX1 and EX1.Params
+if master:
+  Start FLOODER thread to flood EX1.Params
+  Start SYNCHRONIZER listener thread for EX1.Params
+Start MAIN_NEGOTIATOR and GARBAGE_COLLECTOR threads
+if not master:
+  Obtain value of EX1.Params (from flood cache or via M_SYN message)
+Start ASSIGN thread
+while True:
+  if resource pool is low:
+    Calculate needed amount of resource
+    Discover peers (M_DISCOVER / M_RESPONSE)
+    Choose a peer (prefer good_peer if available)
+    Send M_REQ_NEG("EX1", peer)
+    Wait for response (M_NEGOTIATE, M_END or M_WAIT)
+    if OK:
+      if offered resource is sufficient:
+        Negotiation succeeded: Send M_END + O_ACCEPT
+        Add resource to pool
+        good_peer = peer
+      else:
+        Fail negotiation: Send M_END + O_DECLINE
+  sleep(10s)
+	
+MAIN_NEGOTIATOR Thread :
+
+while True:
+  Wait for M_REQ_NEG for EX1
+  start a separate new NEGOTIATOR thread
+   (allows simultaneous negotiations)
+	
+NEGOTIATOR Thread:	
+
+Fetch available resource from pool
+if OK:
+  Offer resource to peer: Send M_NEGOTIATE for EX1 objective
+  if OK:
+    Received M_END + O_ACCEPT
+    Negotiation succeeded	
+  else:
+    Received M_END + O_DECLINE or other error
+    Return resource to pool
+else:
+  Fail negotiation: Send  M_END + O_DECLINE
+	
+ASSIGN Thread:
+
+while True:
+  wait for resource request from managed entity
+  get resource from pool
+  if OK:
+    assign resource to managed entity
+  else:
+    signal main thread that pool is low
+		
+GARBAGE_COLLECTOR Thread:
+
+while True:
+  return unused resources to pool
+  sleep(5s)
+	
+SYNCHRONIZER Thread:
+
+while True:
+  wait for  M_REQ_SYN message for EX1.Params
+  reply with M_SYNCH message for EX1.Params
+	
+FLOODER Thread:
+
+while True:
+  send M_FLOOD message for EX1.Params
+  sleep(60s)
+	
+]]></artwork>
+        </figure></t>
+    </section>
+    <section title="Event Loop Example">
+    <t>TBD</t>
+    </section>
+    </section>
   </back>
 </rfc>
