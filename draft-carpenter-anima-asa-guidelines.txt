@@ -5,12 +5,12 @@
 Network Working Group                                       B. Carpenter
 Internet-Draft                                         Univ. of Auckland
 Intended status: Informational                              L. Ciavaglia
-Expires: August 6, 2018                                            Nokia
+Expires: August 13, 2018                                           Nokia
                                                                 S. Jiang
                                             Huawei Technologies Co., Ltd
                                                                P. Peloso
                                                                    Nokia
-                                                        February 2, 2018
+                                                        February 9, 2018
 
 
                 Guidelines for Autonomic Service Agents
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 6, 2018.
+   This Internet-Draft will expire on August 13, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Carpenter, et al.        Expires August 6, 2018                 [Page 1]
+Carpenter, et al.        Expires August 13, 2018                [Page 1]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -74,7 +74,7 @@ Table of Contents
      3.3.  Interaction with GRASP and its API  . . . . . . . . . . .   5
      3.4.  Interaction with Intent mechanism . . . . . . . . . . . .   6
    4.  Design of GRASP Objectives  . . . . . . . . . . . . . . . . .   7
-   5.  Life Cycle  . . . . . . . . . . . . . . . . . . . . . . . . .   7
+   5.  Life Cycle  . . . . . . . . . . . . . . . . . . . . . . . . .   8
      5.1.  Installation phase  . . . . . . . . . . . . . . . . . . .   8
        5.1.1.  Installation phase inputs and outputs . . . . . . . .   9
      5.2.  Instantiation phase . . . . . . . . . . . . . . . . . . .   9
@@ -82,20 +82,20 @@ Table of Contents
        5.2.2.  Instantiation phase inputs and outputs  . . . . . . .  10
        5.2.3.  Instantiation phase requirements  . . . . . . . . . .  11
      5.3.  Operation phase . . . . . . . . . . . . . . . . . . . . .  12
-   6.  Coordination between Autonomic Functions  . . . . . . . . . .  12
+   6.  Coordination between Autonomic Functions  . . . . . . . . . .  13
    7.  Coordination with Traditional Management Functions  . . . . .  13
    8.  Robustness  . . . . . . . . . . . . . . . . . . . . . . . . .  13
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .  14
    10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  14
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  14
+   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  15
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  15
      12.2.  Informative References . . . . . . . . . . . . . . . . .  15
-   Appendix A.  Change log [RFC Editor: Please remove] . . . . . . .  16
-   Appendix B.  Example Logic Flows  . . . . . . . . . . . . . . . .  17
-     B.1.  Threaded Example  . . . . . . . . . . . . . . . . . . . .  17
-     B.2.  Event Loop Example  . . . . . . . . . . . . . . . . . . .  19
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  19
+   Appendix A.  Change log [RFC Editor: Please remove] . . . . . . .  17
+   Appendix B.  Example Logic Flows  . . . . . . . . . . . . . . . .  18
+     B.1.  Threaded Example  . . . . . . . . . . . . . . . . . . . .  18
+     B.2.  Event Loop Example  . . . . . . . . . . . . . . . . . . .  20
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Carpenter, et al.        Expires August 6, 2018                 [Page 2]
+Carpenter, et al.        Expires August 13, 2018                [Page 2]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -165,7 +165,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 6, 2018                 [Page 3]
+Carpenter, et al.        Expires August 13, 2018                [Page 3]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -221,7 +221,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 6, 2018                 [Page 4]
+Carpenter, et al.        Expires August 13, 2018                [Page 4]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -240,6 +240,8 @@ Internet-Draft               ASA Guidelines                February 2018
    exceptions, but if there is nevertheless some sort of failure, the
    self-monitoring thread should detect it, fix it if possible, and in
    the worst case restart the entire ASA.
+
+   Appendix B presents some example logic flows in informal pseudocode.
 
 3.  Interaction with the Autonomic Networking Infrastructure
 
@@ -272,16 +274,16 @@ Internet-Draft               ASA Guidelines                February 2018
    ASAs may operate without special privilege, unless they need it for
    other reasons.  The ASA's view of GRASP is built around GRASP
    objectives (Section 4), defined as data structures containing
-   administrative information such as the objective's unique name, and
-   its current value.  The format and size of the value is not
 
 
 
-Carpenter, et al.        Expires August 6, 2018                 [Page 5]
+Carpenter, et al.        Expires August 13, 2018                [Page 5]
 
 Internet-Draft               ASA Guidelines                February 2018
 
 
+   administrative information such as the objective's unique name, and
+   its current value.  The format and size of the value is not
    restricted by the protocol, except that it must be possible to
    serialise it for transmission in CBOR [RFC7049], which is no
    restriction at all in practice.
@@ -328,16 +330,15 @@ Internet-Draft               ASA Guidelines                February 2018
    undefined.  It is expected to operate by an information distribution
    mechanism that can reach all autonomic nodes, and therefore every
    ASA.  However, each ASA must be capable of operating "out of the box"
-   in the absence of locally defined Intent, so every ASA implementation
 
 
 
-
-Carpenter, et al.        Expires August 6, 2018                 [Page 6]
+Carpenter, et al.        Expires August 13, 2018                [Page 6]
 
 Internet-Draft               ASA Guidelines                February 2018
 
 
+   in the absence of locally defined Intent, so every ASA implementation
    must include carefully chosen default values and settings for all
    parameters and choices that might depend on Intent.
 
@@ -380,20 +381,25 @@ Internet-Draft               ASA Guidelines                February 2018
    field in raw CBOR, with the ASA itself encoding and decoding it via a
    CBOR library.
 
+   Note that a mapping from YANG to CBOR is defined by
+   [I-D.ietf-core-yang-cbor].  Subject to the size limit defined for
+   GRASP messages, nothing prevents objectives using YANG in this way.
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018                [Page 7]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
 5.  Life Cycle
 
    Autonomic functions could be permanent, in the sense that ASAs are
    shipped as part of a product and persist throughout the product's
    life.  However, a more likely situation is that ASAs need to be
    installed or updated dynamically, because of new requirements or
-
-
-
-Carpenter, et al.        Expires August 6, 2018                 [Page 7]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    bugs.  Because continuity of service is fundamental to autonomic
    networking, the process of seamlessly replacing a running instance of
    an ASA with a new version needs to be part of the ASA's design.
@@ -436,19 +442,20 @@ Internet-Draft               ASA Guidelines                February 2018
    The dynamic installation property  allows installing an ASA on
       demand, on any hosts compatible with the ASA.
 
+
+
+
+Carpenter, et al.        Expires August 13, 2018                [Page 8]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    The decoupling property  allows controlling resources of a NE from a
       remote ASA, i.e. an ASA installed on a host machine different from
       the resources' NE.
 
    The multiplicity property  allows controlling multiple sets of
       resources from a single ASA.
-
-
-
-Carpenter, et al.        Expires August 6, 2018                 [Page 8]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    These three properties are very important in the context of the
    installation phase as their variations condition how the ASA class
@@ -491,6 +498,14 @@ Internet-Draft               ASA Guidelines                February 2018
    Once the ASAs are installed on the appropriate hosts in the network,
    these ASA may start to operate.  From the operator viewpoint, an
    operating ASA means the ASA manages the network resources as per the
+
+
+
+Carpenter, et al.        Expires August 13, 2018                [Page 9]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    objectives given.  At the ASA local level, operating means executing
    their control loop/algorithm.
 
@@ -498,14 +513,6 @@ Internet-Draft               ASA Guidelines                February 2018
    consideration.  First, there is a difference between 1. having a
    piece of code available to run on a host and 2. having an agent based
    on this piece of code running inside the host.  Second, in a coupled
-
-
-
-Carpenter, et al.        Expires August 6, 2018                 [Page 9]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    case, determining which resources are controlled by an ASA is
    straightforward (the determination is embedded), in a decoupled mode
    determining this is a bit more complex (hence a starting agent will
@@ -545,6 +552,16 @@ Internet-Draft               ASA Guidelines                February 2018
 
    Inputs are:
 
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 10]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    [ASA of type_x instances]  that specifies which are the ASAs to be
       targeted (and more precisely which class e.g. 1. version X or
       version Y or 2. provider A or provider B),
@@ -553,14 +570,6 @@ Internet-Draft               ASA Guidelines                February 2018
       resources to be managed by the autonomic function, this can be the
       whole network or a subset of it like a domain a technology segment
       or even a specific list of resources,
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 10]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    [Instantiation_target_parameters]  that specifies which are the
       technical objectives to be set to ASAs (e.g. an optimization
@@ -601,6 +610,14 @@ Internet-Draft               ASA Guidelines                February 2018
    the final goal of such a description is to be shared with other ANIMA
    entities like:
 
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 11]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    o  the coordination entities (see [I-D.ciavaglia-anima-coordination]
       - Autonomic Functions Coordination)
 
@@ -608,15 +625,6 @@ Internet-Draft               ASA Guidelines                February 2018
       exchanges (some ASAs may produce knowledge or even monitor metrics
       that other ASAs cannot make by themselves why those would be
       useful for their execution)
-
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 11]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
 5.3.  Operation phase
 
@@ -655,6 +663,17 @@ Internet-Draft               ASA Guidelines                February 2018
    The ASA life-cycle is discussed in more detail in "A Day in the Life
    of an Autonomic Function" [I-D.peloso-anima-autonomic-function].
 
+
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 12]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
 6.  Coordination between Autonomic Functions
 
    Some autonomic functions will be completely independent of each
@@ -666,18 +685,19 @@ Internet-Draft               ASA Guidelines                February 2018
    necessary.  This issue is considered in "Autonomic Functions
    Coordination" [I-D.ciavaglia-anima-coordination].
 
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 12]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
 7.  Coordination with Traditional Management Functions
 
-   TBD.  How to avoid clashes with traditional tools (CLI, NETCONF,...)?
-   How to integrate with the YANG world?
+   Some ASAs will have functions that overlap with existing
+   configuration tools and network management mechanisms such as command
+   line interfaces, DHCP, DHCPv6, SNMP, NETCONF, RESTCONF and YANG-based
+   solutions.  Each ASA designer will need to consider this issue and
+   how to avoid clashes and inconsistencies.  Some specific
+   considerations for interaction with OAM tools are given in
+   [I-D.ietf-anima-stable-connectivity].  As another example,
+   [I-D.ietf-anima-prefix-management] describes how autonomic management
+   of IPv6 prefixes can interact with prefix delegation via DHCPv6.  The
+   description of a GRASP objective and of an ASA using it should
+   include a discussion of any such interactions.
 
 8.  Robustness
 
@@ -700,6 +720,16 @@ Internet-Draft               ASA Guidelines                February 2018
        reason, it may be repeated after a suitable pause.  The length of
        the pause depends on the use case.
 
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 13]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    4.  If a session fails repeatedly, the ASA should consider that its
        peer has failed, and cause GRASP to flush its discovery cache and
        repeat peer discovery.
@@ -721,14 +751,6 @@ Internet-Draft               ASA Guidelines                February 2018
        support a new feature of either GRASP or of the objective in
        question.  In such a case the ASA may choose to repeat the
        operation concerned without using that new feature.
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 13]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    8.  All other possible exceptions should be handled in an orderly
        way.  There should be no such thing as an unhandled exception
@@ -753,6 +775,16 @@ Internet-Draft               ASA Guidelines                February 2018
 10.  IANA Considerations
 
    This document makes no request of the IANA.
+
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 14]
+
+Internet-Draft               ASA Guidelines                February 2018
+
 
 11.  Acknowledgements
 
@@ -779,13 +811,6 @@ Internet-Draft               ASA Guidelines                February 2018
               Autonomic Signaling Protocol (GRASP)", draft-ietf-anima-
               grasp-15 (work in progress), July 2017.
 
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 14]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    [RFC7049]  Bormann, C. and P. Hoffman, "Concise Binary Object
               Representation (CBOR)", RFC 7049, DOI 10.17487/RFC7049,
               October 2013, <https://www.rfc-editor.org/info/rfc7049>.
@@ -810,16 +835,41 @@ Internet-Draft               ASA Guidelines                February 2018
               Computing Surveys (CSUR) Volume 40 Issue 3 DOI:
               10.1145/1380584.1380585, August 2008.
 
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 15]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    [I-D.ciavaglia-anima-coordination]
               Ciavaglia, L. and P. Peloso, "Autonomic Functions
               Coordination", draft-ciavaglia-anima-coordination-01 (work
               in progress), March 2016.
+
+   [I-D.ietf-anima-prefix-management]
+              Jiang, S., Du, Z., Carpenter, B., and Q. Sun, "Autonomic
+              IPv6 Edge Prefix Management in Large-scale Networks",
+              draft-ietf-anima-prefix-management-07 (work in progress),
+              December 2017.
 
    [I-D.ietf-anima-reference-model]
               Behringer, M., Carpenter, B., Eckert, T., Ciavaglia, L.,
               Pierre, P., Liu, B., Nobre, J., and J. Strassner, "A
               Reference Model for Autonomic Networking", draft-ietf-
               anima-reference-model-05 (work in progress), October 2017.
+
+   [I-D.ietf-anima-stable-connectivity]
+              Eckert, T. and M. Behringer, "Using Autonomic Control
+              Plane for Stable Connectivity of Network OAM", draft-ietf-
+              anima-stable-connectivity-10 (work in progress), February
+              2018.
+
+   [I-D.ietf-core-yang-cbor]
+              Veillette, M., Pelov, A., Somaraju, A., Turner, R., and A.
+              Minaburo, "CBOR Encoding of Data Modeled with YANG",
+              draft-ietf-core-yang-cbor-06 (work in progress), February
+              2018.
 
    [I-D.liu-anima-grasp-api]
               Carpenter, B., Liu, B., Wang, W., and X. Gong, "Generic
@@ -832,22 +882,21 @@ Internet-Draft               ASA Guidelines                February 2018
               Autonomic Function", draft-peloso-anima-autonomic-
               function-01 (work in progress), March 2016.
 
-
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 15]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    [Movahedi12]
               Movahedi, Z., Ayari, M., Langar, R., and G. Pujolle, "A
               Survey of Autonomic Network Architectures and Evaluation
               Criteria", IEEE Communications Surveys & Tutorials Volume:
               14 , Issue: 2 DOI: 10.1109/SURV.2011.042711.00078,
               Page(s): 464 - 490, 2012.
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 16]
+
+Internet-Draft               ASA Guidelines                February 2018
+
 
    [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
               Morris, J., Hansen, M., and R. Smith, "Privacy
@@ -868,7 +917,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 Appendix A.  Change log [RFC Editor: Please remove]
 
-   draft-carpenter-anima-asa-guidelines-04, 2018-01-02:
+   draft-carpenter-anima-asa-guidelines-04, 2018-02-09:
 
    Added note about simple ASAs.
 
@@ -876,7 +925,7 @@ Appendix A.  Change log [RFC Editor: Please remove]
 
    Improved text about threading v event loop model
 
-   Added blank section about clash with traditional tools.
+   Added section about coordination with traditional tools.
 
    Added appendix with example logic flows
 
@@ -890,14 +939,6 @@ Appendix A.  Change log [RFC Editor: Please remove]
 
    draft-carpenter-anima-asa-guidelines-02, 2017-07-01:
 
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 16]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    Expanded description of event-loop case.
 
    Added note about 'dry run' mode.
@@ -905,6 +946,13 @@ Internet-Draft               ASA Guidelines                February 2018
    draft-carpenter-anima-asa-guidelines-01, 2017-01-06:
 
    More sections filled in
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 17]
+
+Internet-Draft               ASA Guidelines                February 2018
+
 
    draft-carpenter-anima-asa-guidelines-00, 2016-09-30:
 
@@ -946,14 +994,6 @@ B.1.  Threaded Example
        Wait for response (M_NEGOTIATE, M_END or M_WAIT)
        if OK:
          if offered resource is sufficient:
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 17]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
            Negotiation succeeded: Send M_END + O_ACCEPT
            Add resource to pool
            good_peer = peer
@@ -962,6 +1002,13 @@ Internet-Draft               ASA Guidelines                February 2018
      sleep(10s)
 
    MAIN_NEGOTIATOR Thread :
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 18]
+
+Internet-Draft               ASA Guidelines                February 2018
+
 
    while True:
      Wait for M_REQ_NEG for EX1
@@ -1002,14 +1049,6 @@ Internet-Draft               ASA Guidelines                February 2018
 
    while True:
      wait for  M_REQ_SYN message for EX1.Params
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 18]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
      reply with M_SYNCH message for EX1.Params
 
    FLOODER Thread:
@@ -1017,6 +1056,14 @@ Internet-Draft               ASA Guidelines                February 2018
    while True:
      send M_FLOOD message for EX1.Params
      sleep(60s)
+
+
+
+
+
+Carpenter, et al.        Expires August 13, 2018               [Page 19]
+
+Internet-Draft               ASA Guidelines                February 2018
 
 
 B.2.  Event Loop Example
@@ -1053,19 +1100,6 @@ Authors' Addresses
    Email: jiangsheng@huawei.com
 
 
-
-
-
-
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 19]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
    Pierre Peloso
    Nokia
    Villarceaux
@@ -1083,38 +1117,4 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Carpenter, et al.        Expires August 6, 2018                [Page 20]
+Carpenter, et al.        Expires August 13, 2018               [Page 20]

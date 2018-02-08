@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="2" month="February" year="2018"/>
+    <date day="9" month="February" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -183,6 +183,8 @@
     there is nevertheless some sort of failure, the self-monitoring thread should detect it, fix it
     if possible, and in the worst case restart the entire ASA.</t>
     
+    <t><xref target="eg"/> presents some example logic flows in informal pseudocode.</t>
+    
     </section>
     
     <section anchor="interact" title="Interaction with the Autonomic Networking Infrastructure">
@@ -273,6 +275,8 @@
     of parsing and generating JSON. The formats acceptable by the GRASP API will limit the
     options in practice. A fallback solution is for the API to accept and deliver the value
     field in raw CBOR, with the ASA itself encoding and decoding it via a CBOR library.</t>
+    <t>Note that a mapping from YANG to CBOR is defined by <xref target="I-D.ietf-core-yang-cbor"/>. Subject to
+    the size limit defined for GRASP messages, nothing prevents objectives using YANG in this way.</t>
     </section>
     
     <section anchor="life" title="Life Cycle">
@@ -430,8 +434,17 @@ Undeployed ------>|              |------> Undeployed
     </section>
     
     <section anchor="coordt" title="Coordination with Traditional Management Functions">
-    <t>TBD. How to avoid clashes with traditional tools (CLI, NETCONF,...)? How to integrate
-    with the YANG world?</t>
+
+    <t>Some ASAs will have functions that overlap with existing configuration tools
+    and network management mechanisms such as command line interfaces, DHCP, DHCPv6,
+    SNMP, NETCONF, RESTCONF and YANG-based solutions. Each ASA designer will need to
+    consider this issue and how to avoid clashes and inconsistencies. Some specific
+    considerations for interaction with OAM tools are
+    given in <xref target="I-D.ietf-anima-stable-connectivity"/>.
+    As another example, <xref target="I-D.ietf-anima-prefix-management"/>
+    describes how autonomic management of IPv6 prefixes can interact with prefix delegation
+    via DHCPv6. The description of a GRASP objective and of an ASA using it should include
+    a discussion of any such interactions.</t>
     </section>
     
     <section anchor="robust" title="Robustness">
@@ -517,7 +530,9 @@ Undeployed ------>|              |------> Undeployed
       <?rfc include='reference.I-D.peloso-anima-autonomic-function'?>
       <?rfc include='reference.I-D.ciavaglia-anima-coordination'?>
       <?rfc include='reference.I-D.liu-anima-grasp-api'?>
-      
+      <?rfc include='reference.I-D.ietf-core-yang-cbor'?>
+      <?rfc include='reference.I-D.ietf-anima-stable-connectivity'?>
+      <?rfc include='reference.I-D.ietf-anima-prefix-management'?>      
       
       <reference anchor="DeMola06">
         <front>
@@ -564,7 +579,7 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-04, 2018-01-02:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2018-02-09:
       <vspace blankLines="1"/>
       Added note about simple ASAs.
       <vspace blankLines="1"/>
@@ -572,7 +587,7 @@ Undeployed ------>|              |------> Undeployed
       <vspace blankLines="1"/>
       Improved text about threading v event loop model
       <vspace blankLines="1"/>
-      Added blank section about clash with traditional tools.
+      Added section about coordination with traditional tools.
       <vspace blankLines="1"/>
       Added appendix with example logic flows
       </t>
@@ -597,7 +612,7 @@ Undeployed ------>|              |------> Undeployed
        Initial version</t>  
     </section>
     
-    <section title="Example Logic Flows">
+    <section anchor="eg" title="Example Logic Flows">
     <t>This appendix outlines logic flows for a general purpose resource management ASA.
     It is assumed that all ASA instances managing this resource use the same logic. However,
     one instance acts as a master, initialised with a resource pool and a set
