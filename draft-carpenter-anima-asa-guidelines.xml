@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="9" month="February" year="2018"/>
+    <date day="12" month="February" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -445,6 +445,11 @@ Undeployed ------>|              |------> Undeployed
     describes how autonomic management of IPv6 prefixes can interact with prefix delegation
     via DHCPv6. The description of a GRASP objective and of an ASA using it should include
     a discussion of any such interactions.</t>
+    <t>A related aspect is that management functions often include a data model, quite likely to
+    be expressed in a formal notation such as YANG. This aspect should not be an afterthought
+    in the design of an ASA. To the contrary, the design of the ASA and of its GRASP objectives
+    should match the data model; as noted above, YANG serialized as CBOR may be used directly
+    as the value of a GRASP objective.</t>
     </section>
     
     <section anchor="robust" title="Robustness">
@@ -506,6 +511,7 @@ Undeployed ------>|              |------> Undeployed
 
     <section anchor="ack" title="Acknowledgements">
       <t>Useful comments were received from
+      Toerless Eckert,
       Bing Liu,
       and other members of the ANIMA WG.</t>
     </section>
@@ -579,7 +585,7 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-04, 2018-02-09:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2018-02-12:
       <vspace blankLines="1"/>
       Added note about simple ASAs.
       <vspace blankLines="1"/>
@@ -589,7 +595,7 @@ Undeployed ------>|              |------> Undeployed
       <vspace blankLines="1"/>
       Added section about coordination with traditional tools.
       <vspace blankLines="1"/>
-      Added appendix with example logic flows
+      Added appendix with example logic flows.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
       <vspace blankLines="1"/>

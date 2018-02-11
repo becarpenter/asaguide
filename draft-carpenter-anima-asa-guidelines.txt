@@ -5,12 +5,12 @@
 Network Working Group                                       B. Carpenter
 Internet-Draft                                         Univ. of Auckland
 Intended status: Informational                              L. Ciavaglia
-Expires: August 13, 2018                                           Nokia
+Expires: August 16, 2018                                           Nokia
                                                                 S. Jiang
                                             Huawei Technologies Co., Ltd
                                                                P. Peloso
                                                                    Nokia
-                                                        February 9, 2018
+                                                       February 12, 2018
 
 
                 Guidelines for Autonomic Service Agents
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 13, 2018.
+   This Internet-Draft will expire on August 16, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 1]
+Carpenter, et al.        Expires August 16, 2018                [Page 1]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -86,7 +86,7 @@ Table of Contents
    7.  Coordination with Traditional Management Functions  . . . . .  13
    8.  Robustness  . . . . . . . . . . . . . . . . . . . . . . . . .  13
    9.  Security Considerations . . . . . . . . . . . . . . . . . . .  14
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
    11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  15
    12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
      12.1.  Normative References . . . . . . . . . . . . . . . . . .  15
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 2]
+Carpenter, et al.        Expires August 16, 2018                [Page 2]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -165,7 +165,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 3]
+Carpenter, et al.        Expires August 16, 2018                [Page 3]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -221,7 +221,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 4]
+Carpenter, et al.        Expires August 16, 2018                [Page 4]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -277,7 +277,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 5]
+Carpenter, et al.        Expires August 16, 2018                [Page 5]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -333,7 +333,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 6]
+Carpenter, et al.        Expires August 16, 2018                [Page 6]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -389,7 +389,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 7]
+Carpenter, et al.        Expires August 16, 2018                [Page 7]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -445,7 +445,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 8]
+Carpenter, et al.        Expires August 16, 2018                [Page 8]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -501,7 +501,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018                [Page 9]
+Carpenter, et al.        Expires August 16, 2018                [Page 9]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -557,7 +557,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018               [Page 10]
+Carpenter, et al.        Expires August 16, 2018               [Page 10]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -613,7 +613,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018               [Page 11]
+Carpenter, et al.        Expires August 16, 2018               [Page 11]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -669,7 +669,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 
 
-Carpenter, et al.        Expires August 13, 2018               [Page 12]
+Carpenter, et al.        Expires August 16, 2018               [Page 12]
 
 Internet-Draft               ASA Guidelines                February 2018
 
@@ -699,6 +699,14 @@ Internet-Draft               ASA Guidelines                February 2018
    description of a GRASP objective and of an ASA using it should
    include a discussion of any such interactions.
 
+   A related aspect is that management functions often include a data
+   model, quite likely to be expressed in a formal notation such as
+   YANG.  This aspect should not be an afterthought in the design of an
+   ASA.  To the contrary, the design of the ASA and of its GRASP
+   objectives should match the data model; as noted above, YANG
+   serialized as CBOR may be used directly as the value of a GRASP
+   objective.
+
 8.  Robustness
 
    It is of great importance that all components of an autonomic system
@@ -712,6 +720,16 @@ Internet-Draft               ASA Guidelines                February 2018
        pause should be inserted before such a restart.  The length of
        the pause depends on the use case.
 
+
+
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 13]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    2.  If a newly received or calculated value for a parameter falls out
        of bounds, the corresponding parameter should be either left
        unchanged or restored to a safe value.
@@ -719,16 +737,6 @@ Internet-Draft               ASA Guidelines                February 2018
    3.  If a GRASP synchronization or negotiation session fails for any
        reason, it may be repeated after a suitable pause.  The length of
        the pause depends on the use case.
-
-
-
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 13]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    4.  If a session fails repeatedly, the ASA should consider that its
        peer has failed, and cause GRASP to flush its discovery cache and
@@ -768,6 +776,16 @@ Internet-Draft               ASA Guidelines                February 2018
    information.  As appropriate to their specific functions, ASAs should
    take account of relevant privacy considerations [RFC6973].
 
+
+
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 14]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    Authorization of ASAs is a subject for future study.  At present,
    ASAs are trusted by virtue of being installed on a node that has
    successfully joined the ACP.
@@ -776,20 +794,10 @@ Internet-Draft               ASA Guidelines                February 2018
 
    This document makes no request of the IANA.
 
-
-
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 14]
-
-Internet-Draft               ASA Guidelines                February 2018
-
-
 11.  Acknowledgements
 
-   Useful comments were received from Bing Liu, and other members of the
-   ANIMA WG.
+   Useful comments were received from Toerless Eckert, Bing Liu, and
+   other members of the ANIMA WG.
 
 12.  References
 
@@ -822,6 +830,18 @@ Internet-Draft               ASA Guidelines                February 2018
               Autonomic Communications", Proceedings of the 7th WOA 2006
               Workshop From Objects to Agents 51-59, September 2006.
 
+
+
+
+
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 15]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    [GANA13]   ETSI GS AFI 002, "Autonomic network engineering for the
               self-managing Future Internet (AFI): GANA Architectural
               Reference Model for Autonomic Networking, Cognitive
@@ -834,13 +854,6 @@ Internet-Draft               ASA Guidelines                February 2018
               computing--degrees, models, and applications", ACM
               Computing Surveys (CSUR) Volume 40 Issue 3 DOI:
               10.1145/1380584.1380585, August 2008.
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 15]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    [I-D.ciavaglia-anima-coordination]
               Ciavaglia, L. and P. Peloso, "Autonomic Functions
@@ -877,6 +890,14 @@ Internet-Draft               ASA Guidelines                February 2018
               (GRASP API)", draft-liu-anima-grasp-api-06 (work in
               progress), November 2017.
 
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 16]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    [I-D.peloso-anima-autonomic-function]
               Pierre, P. and L. Ciavaglia, "A Day in the Life of an
               Autonomic Function", draft-peloso-anima-autonomic-
@@ -888,15 +909,6 @@ Internet-Draft               ASA Guidelines                February 2018
               Criteria", IEEE Communications Surveys & Tutorials Volume:
               14 , Issue: 2 DOI: 10.1109/SURV.2011.042711.00078,
               Page(s): 464 - 490, 2012.
-
-
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 16]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
               Morris, J., Hansen, M., and R. Smith, "Privacy
@@ -917,7 +929,7 @@ Internet-Draft               ASA Guidelines                February 2018
 
 Appendix A.  Change log [RFC Editor: Please remove]
 
-   draft-carpenter-anima-asa-guidelines-04, 2018-02-09:
+   draft-carpenter-anima-asa-guidelines-04, 2018-02-12:
 
    Added note about simple ASAs.
 
@@ -927,13 +939,20 @@ Appendix A.  Change log [RFC Editor: Please remove]
 
    Added section about coordination with traditional tools.
 
-   Added appendix with example logic flows
+   Added appendix with example logic flows.
 
    draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
 
    Added details on life cycle.
 
    Added details on robustness.
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 17]
+
+Internet-Draft               ASA Guidelines                February 2018
+
 
    Added co-authors.
 
@@ -946,13 +965,6 @@ Appendix A.  Change log [RFC Editor: Please remove]
    draft-carpenter-anima-asa-guidelines-01, 2017-01-06:
 
    More sections filled in
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 17]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    draft-carpenter-anima-asa-guidelines-00, 2016-09-30:
 
@@ -990,6 +1002,14 @@ B.1.  Threaded Example
        Calculate needed amount of resource
        Discover peers (M_DISCOVER / M_RESPONSE)
        Choose a peer (prefer good_peer if available)
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 18]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
        Send M_REQ_NEG("EX1", peer)
        Wait for response (M_NEGOTIATE, M_END or M_WAIT)
        if OK:
@@ -1002,13 +1022,6 @@ B.1.  Threaded Example
      sleep(10s)
 
    MAIN_NEGOTIATOR Thread :
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 18]
-
-Internet-Draft               ASA Guidelines                February 2018
-
 
    while True:
      Wait for M_REQ_NEG for EX1
@@ -1045,6 +1058,14 @@ Internet-Draft               ASA Guidelines                February 2018
      return unused resources to pool
      sleep(5s)
 
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 19]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    SYNCHRONIZER Thread:
 
    while True:
@@ -1056,14 +1077,6 @@ Internet-Draft               ASA Guidelines                February 2018
    while True:
      send M_FLOOD message for EX1.Params
      sleep(60s)
-
-
-
-
-
-Carpenter, et al.        Expires August 13, 2018               [Page 19]
-
-Internet-Draft               ASA Guidelines                February 2018
 
 
 B.2.  Event Loop Example
@@ -1100,6 +1113,15 @@ Authors' Addresses
    Email: jiangsheng@huawei.com
 
 
+
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 20]
+
+Internet-Draft               ASA Guidelines                February 2018
+
+
    Pierre Peloso
    Nokia
    Villarceaux
@@ -1117,4 +1139,38 @@ Authors' Addresses
 
 
 
-Carpenter, et al.        Expires August 13, 2018               [Page 20]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Carpenter, et al.        Expires August 16, 2018               [Page 21]
