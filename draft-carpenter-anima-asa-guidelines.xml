@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="12" month="February" year="2018"/>
+    <date day="3" month="March" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -585,7 +585,7 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-04, 2018-02-12:
+    <t>draft-carpenter-anima-asa-guidelines-04, 2018-03-03:
       <vspace blankLines="1"/>
       Added note about simple ASAs.
       <vspace blankLines="1"/>
@@ -595,7 +595,7 @@ Undeployed ------>|              |------> Undeployed
       <vspace blankLines="1"/>
       Added section about coordination with traditional tools.
       <vspace blankLines="1"/>
-      Added appendix with example logic flows.
+      Added appendix with example logic flow.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-03, 2017-10-25:
       <vspace blankLines="1"/>
