@@ -207,7 +207,7 @@
     
      <section anchor="api" title="Interaction with GRASP and its API">
      <t>GRASP <xref target="I-D.ietf-anima-grasp"/> is expected to run as a separate process
-     with its API <xref target="I-D.liu-anima-grasp-api"/> available in user space. Thus ASAs may operate without
+     with its API <xref target="I-D.ietf-anima-grasp-api"/> available in user space. Thus ASAs may operate without
      special privilege, unless they need it for other reasons. The ASA's view of GRASP is built around GRASP
      objectives (<xref target="objdes"/>), defined as data structures containing administrative information
      such as the objective's unique name, and its current value. The format and size of the value is not
@@ -227,7 +227,7 @@
      so that any ASA can receive it.</t>
      </list>
      </t>
-     <t>For further details and some additional housekeeping functions, see <xref target="I-D.liu-anima-grasp-api"/>.
+     <t>For further details and some additional housekeeping functions, see <xref target="I-D.ietf-anima-grasp-api"/>.
      </t>
      <t>This API is intended to support the various interactions expected between most ASAs, such as the
      interactions outlined in <xref target="structure"/>. However, if ASAs
@@ -535,7 +535,7 @@ Undeployed ------>|              |------> Undeployed
       <?rfc include='reference.I-D.ietf-anima-reference-model'?>
       <?rfc include='reference.I-D.peloso-anima-autonomic-function'?>
       <?rfc include='reference.I-D.ciavaglia-anima-coordination'?>
-      <?rfc include='reference.I-D.liu-anima-grasp-api'?>
+      <?rfc include='reference.I-D.ietf-anima-grasp-api'?>
       <?rfc include='reference.I-D.ietf-core-yang-cbor'?>
       <?rfc include='reference.I-D.ietf-anima-stable-connectivity'?>
       <?rfc include='reference.I-D.ietf-anima-prefix-management'?>      
@@ -587,7 +587,7 @@ Undeployed ------>|              |------> Undeployed
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
     <t>draft-carpenter-anima-asa-guidelines-05, 2018-??-??:
       <vspace blankLines="1"/>
-      TBD
+      Editorial corrections
       </t>
     <t>draft-carpenter-anima-asa-guidelines-04, 2018-03-03:
       <vspace blankLines="1"/>
