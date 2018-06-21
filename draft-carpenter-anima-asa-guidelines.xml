@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="?" month="April" year="2018"/>
+    <date day="21" month="June" year="2018"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -110,7 +110,8 @@
     <t>ASAs must be distinguished from other forms of software component. They are
     components of network or service management; they do not in themselves provide
     services. For example, the services envisaged for network function virtualisation
-    [reference needed] or for service function chaining <xref target="RFC7665"/>
+    <xref target="I-D.irtf-nfvrg-gaps-network-virtualization"/>
+    or for service function chaining <xref target="RFC7665"/>
     might be managed by an ASA rather than by traditional configuration tools.</t>
          
     <t>The reference model <xref target="I-D.ietf-anima-reference-model"/> expands
@@ -245,6 +246,24 @@
      and settings for all parameters and choices that might depend on Intent.</t>
      </section>
 
+    </section>
+    
+    <section anchor="nonauto" title="Interaction with Non-Autonomic Components">
+    <t>An ASA, to have any external effects, must also interact with non-autonomic
+    components of the node where it is installed. For example, an ASA whose purpose
+    is to manage a resource must interact with that resource. An ASA whose purpose
+    is to manage an entity that is already managed by local software must interact
+    with that software. This is stating the obvious, and the details are specific
+    to each case, but it has an important security
+    implication. The ASA might act as a loophole by which the managed entity could
+    penetrate the security boundary of the ANI. The ASA must be designed to avoid
+    such loopholes, and should if possible operate in an unprivileged mode.</t>
+    <t>In an environment where systems are virtualized and specialized using
+    techniques such as network function virtualization or network slicing,
+    there will be a design choice whether ASAs are deployed once per physical node
+    or once per virtual context. A related issue is whether the ANI as a whole
+    is deployed once on a physical network, or whether several virtual ANIs
+    are deployed. This aspect needs to be considered by the ASA designer.</t>
     </section>
     
     <section anchor="objdes" title="Design of GRASP Objectives">
@@ -512,6 +531,7 @@ Undeployed ------>|              |------> Undeployed
     <section anchor="ack" title="Acknowledgements">
       <t>Useful comments were received from
       Toerless Eckert,
+      Alex Galis,
       Bing Liu,
       and other members of the ANIMA WG.</t>
     </section>
@@ -538,7 +558,8 @@ Undeployed ------>|              |------> Undeployed
       <?rfc include='reference.I-D.ietf-anima-grasp-api'?>
       <?rfc include='reference.I-D.ietf-core-yang-cbor'?>
       <?rfc include='reference.I-D.ietf-anima-stable-connectivity'?>
-      <?rfc include='reference.I-D.ietf-anima-prefix-management'?>      
+      <?rfc include='reference.I-D.ietf-anima-prefix-management'?>
+      <?rfc include='reference.I-D.irtf-nfvrg-gaps-network-virtualization'?>      
       
       <reference anchor="DeMola06">
         <front>
@@ -585,9 +606,11 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-05, 2018-??-??:
+    <t>draft-carpenter-anima-asa-guidelines-05, 2018-06-21:
       <vspace blankLines="1"/>
-      Editorial corrections
+      Added section on relationshp with non-autonomic components.
+      <vspace blankLines="1"/>
+      Editorial corrections.
       </t>
     <t>draft-carpenter-anima-asa-guidelines-04, 2018-03-03:
       <vspace blankLines="1"/>
