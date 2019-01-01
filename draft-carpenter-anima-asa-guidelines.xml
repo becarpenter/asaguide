@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="1" month="January" year="2019"/>
+    <date day="2" month="January" year="2019"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -145,7 +145,7 @@
     <list style="symbols">
     <t>Obtain authorization credentials.</t>
     <t>Register the ASA with GRASP.</t>
-    <t>Acquire relevant policy Intent.</t>
+    <t>Acquire relevant policy parameters.</t>
     <t>Define data structures for relevant GRASP objectives.</t>
     <t>Register with GRASP those objectives that it will actively manage.</t>
     <t>Launch a self-monitoring thread.</t>
@@ -175,7 +175,7 @@
     threads, with appropriate use of queues and locks to maintain consistency.</t>
     <t>The main loop itself could act as the initiator of synchronization requests or negotiation
     requests, when the ASA needs data or resources from other ASAs. In particular, the main loop should
-    watch for changes in policy Intent that affect its operation. It should also do whatever is required
+    watch for changes in policy parameters that affect its operation. It should also do whatever is required
     to avoid unnecessary resource consumption, such as including an arbitrary wait time in each cycle
     of the main loop.</t>
     
@@ -238,12 +238,12 @@
      in special cases the autonomic key infrastructure will be used to secure such communications.</t>
      </section>
      
-     <section title="Interaction with Intent mechanism">
-     <t>At the time of writing, the Intent mechanism for the ANI is undefined.
+     <section title="Interaction with policy mechanism">
+     <t>At the time of writing, the policy (or "Intent") mechanism for the ANI is undefined.
      It is expected to operate by an information distribution mechanism that can reach all autonomic
      nodes, and therefore every ASA. However, each ASA must be capable of operating "out of the box" in the
-     absence of locally defined Intent, so every ASA implementation must include carefully chosen default values
-     and settings for all parameters and choices that might depend on Intent.</t>
+     absence of locally defined policy, so every ASA implementation must include carefully chosen default values
+     and settings for all policy parameters.</t>
      </section>
 
     </section>
@@ -606,7 +606,7 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-06, 2018-01-01:
+    <t>draft-carpenter-anima-asa-guidelines-06, 2018-01-02:
       <vspace blankLines="1"/>
       Expanded and improved example logic flow.
       <vspace blankLines="1"/>
@@ -662,7 +662,7 @@ An underlying assumption is that there is an initial source of the resource in q
 </t>
 <t>
 Another assumption is there is a set of network wide policy parameters, which the master will provide to the delegators. These parameters will control how the delegators decide how much resource to provide to consumers.
-Thus the ASA logic has two operating modes: master and delegator. When running as a master, it starts by obtaining a quantity of the resource from the NOC, and it acts as a source of policy parameters.
+Thus the ASA logic has two operating modes: master and delegator. When running as a master, it starts by obtaining a quantity of the resource from the NOC, and it acts as a source of policy parameters, via both GRASP flooding and GRASP synchronization. (In some scenarios, flooding or synchronization alone might be sufficient, but this example includes both.)
 </t>
 <t>
 When running as a delegator, it starts with an empty resource pool, it acquires the policy parameters by GRASP synchronization, and it delegates quantities of the resource to consumers that request it. 
@@ -684,8 +684,8 @@ The main data structures used in each instance of the ASA are:
 </t>
 <t>
 The delegated_list, where a delegator stores the resources it has given to consumers routers.
-Possible main logic flows are below, using a threaded implementation model. The transformation to an event loop model should be apparent - each thread would correspond to one event in the event loop.
 </t></list>
+Possible main logic flows are below, using a threaded implementation model. The transformation to an event loop model should be apparent - each thread would correspond to one event in the event loop.
 </t>
 <t>
 The GRASP objectives are as follows:
@@ -724,22 +724,22 @@ Start GARBAGE_COLLECTOR thread
 do forever:
     good_peer = none
     if resource_pool is low:
-        calculate amount A of resource needed
-        discover peers using GRASP M_DISCOVER / M_RESPONSE
+        Calculate amount A of resource needed
+        Discover peers using GRASP M_DISCOVER / M_RESPONSE
         if good_peer in peers:
             peer = good_peer
         else:
             peer =  #any choice among peers
             grasp.request_negotiate("EX1.Resource", peer)
             i.e., send M_REQ_NEG
-            wait for response (M_NEGOTIATE, M_END or M_WAIT)
+            Wait for response (M_NEGOTIATE, M_END or M_WAIT)
             if OK:
                 if offered amount of resource sufficient:
-                    send M_END + O_ACCEPT #negotiation succeeded
-                    add resource to pool
+                    Send M_END + O_ACCEPT #negotiation succeeded
+                    Add resource to pool
                     good_peer = peer
                 else:
-                    send M_END + O_DECLINE #negotiation failed
+                    Send M_END + O_DECLINE #negotiation failed
     sleep() #sleep time depends on application scenario
 ]]></artwork>
         </figure></t>
@@ -751,7 +751,7 @@ MAIN_NEGOTIATOR thread:
 do forever:
     grasp.listen_negotiate("EX1.Resource")
     i.e., wait for M_REQ_NEG
-    start a separate new NEGOTIATOR thread for requested amount A
+    Start a separate new NEGOTIATOR thread for requested amount A
 ]]></artwork>
         </figure></t>
 
@@ -765,14 +765,13 @@ if not OK:
         A = A-1
         Request resource amount A from resource_pool
 if OK:
-    offer resource amount A to peer by GRASP M_NEGOTIATE
-    if OK:
-        received M_END + O_ACCEPT #negotiation succeeded
-    else:
-        received M_END + O_DECLINE or other error #negotiation failed
-        
+    Offer resource amount A to peer by GRASP M_NEGOTIATE
+    if received M_END + O_ACCEPT:
+        #negotiation succeeded
+    elif received M_END + O_DECLINE or other error:
+        #negotiation failed
 else:
-    send M_END + O_DECLINE #negotiation failed
+    Send M_END + O_DECLINE #negotiation failed
 ]]></artwork>
         </figure></t>
 
@@ -781,17 +780,18 @@ else:
 DELEGATOR thread:
 
 do forever:
-    wait for request or release for resource amount A
+    Wait for request or release for resource amount A
     if request:
-        get resource amount A from resource_pool
+        Get resource amount A from resource_pool
         if OK:
-            delegate resource to consumer
-            record in delegated_list
+            Delegate resource to consumer
+            Record in delegated_list
         else:
-	          signal failure to consumer
-            signal main thread that resource_pool is low
+	          Signal failure to consumer
+            Signal main thread that resource_pool is low
     else:
-        return resource amount A to resource_pool
+        Delete resource from delegated_list
+        Return resource amount A to resource_pool
 ]]></artwork>
         </figure></t>
 
@@ -800,8 +800,8 @@ do forever:
 SYNCHRONIZER thread:
 
 do forever:
-  wait for  M_REQ_SYN message for EX1.Params
-  reply with M_SYNCH message for EX1.Params
+  Wait for  M_REQ_SYN message for EX1.Params
+  Reply with M_SYNCH message for EX1.Params
 ]]></artwork>
         </figure></t>
 
@@ -810,7 +810,7 @@ do forever:
 FLOODER thread:
 
 do forever:
-  send M_FLOOD message for EX1.Params
+  Send M_FLOOD message for EX1.Params
   sleep() #sleep time depends on application scenario
 
 ]]></artwork>
@@ -821,8 +821,8 @@ do forever:
 GARBAGE_COLLECTOR thread:
 
 do forever:
-    search resource_pool for adjacent resources
-    merge adjacent resources
+    Search resource_pool for adjacent resources
+    Merge adjacent resources
     sleep() #sleep time depends on application scenario
 ]]></artwork>
         </figure></t>
