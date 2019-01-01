@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="xx" month="xxxx" year="2018"/>
+    <date day="1" month="January" year="2019"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -307,8 +307,8 @@
     part of the ASA's design.</t>
 	<t>The implication of service continuity on the design of ASAs can be illustrated along the three
 	main phases of the ASA life-cycle, namely Installation, Instantiation and Operation.</t>
-	<figure anchor="Fig_LC" title="Life cycle of an Autonomic Service Agent" align="center">
-		<artwork align="center">
+	<figure anchor="Fig_LC" title="Life cycle of an Autonomic Service Agent">
+		<artwork>
 	<![CDATA[
                   +--------------+
 Undeployed ------>|              |------> Undeployed
@@ -606,9 +606,9 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-06, 2018-xx-xx:
+    <t>draft-carpenter-anima-asa-guidelines-06, 2018-01-01:
       <vspace blankLines="1"/>
-      TBD
+      Expanded and improved example logic flow.
       <vspace blankLines="1"/>
       Editorial corrections.
       </t>
@@ -652,103 +652,181 @@ Undeployed ------>|              |------> Undeployed
     </section>
     
     <section anchor="eg" title="Example Logic Flows">
-    <t>This appendix outlines logic flows for a general purpose resource management ASA.
-    It is assumed that all ASA instances managing this resource use the same logic. However,
-    one instance acts as a master, initialised with a resource pool and a set
-    of policy parameters. The ASA uses a notional objective EX1 and an associated
-    policy parameters objective EX1.Params.</t>
-    
-    <section title="Threaded Example">   
-    
-    <t><figure>
-          <artwork align="center"><![CDATA[
-MAIN Thread:
+<t>This appendix describes generic logic flows for an Autonomic Service Agent (ASA) for resource management. Note that these are illustrative examples, and in no sense requirements. As long as the rules of GRASP are followed, a real implementation could be different. The reader is assumed to be familiar with GRASP
+<xref target="I-D.ietf-anima-grasp"/> and its conceptual API <xref target="I-D.ietf-anima-grasp-api"/>.
+</t>
+<t>A complete autonomic function for a resource would consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="I-D.ietf-anima-prefix-management"/>. In this case, an instance of the ASA would exist in each delegating router.
+</t>
+<t>
+An underlying assumption is that there is an initial source of the resource in question, referred to here as a master ASA. The other ASAs, known as delegators, obtain supplies of the resource from the master, and then delegate quantities of the resource to consumers that request it, and recover it when no longer needed.
+</t>
+<t>
+Another assumption is there is a set of network wide policy parameters, which the master will provide to the delegators. These parameters will control how the delegators decide how much resource to provide to consumers.
+Thus the ASA logic has two operating modes: master and delegator. When running as a master, it starts by obtaining a quantity of the resource from the NOC, and it acts as a source of policy parameters.
+</t>
+<t>
+When running as a delegator, it starts with an empty resource pool, it acquires the policy parameters by GRASP synchronization, and it delegates quantities of the resource to consumers that request it. 
+Both as a master and as a delegator, when its pool is low it seeks quantities of the resource by requesting GRASP negotiation with peer ASAs. When its pool is sufficient, it hands out resource to peer ASAs in response to negotiation requests. Thus, over time, the initial resource pool held by the master will be shared among all the delegators according to demand.
+</t>
+<t>
+In theory a network could include any number of masters and any number of delegators, with the only condition being that each master's initial resource pool is unique. A realistic scenario is to have exactly one master and as many delegators as you like. A scenario with no master is useless.
+</t>
+<t>
+An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If a master exits, its entire spare pool is lost. The logic for using stable storage and for crash receovery is not included below.
+</t>
+<t>
+The description below doesn't implement GRASP's 'dry run' function. That would mean temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout expires.
+</t>
+<t>
+The main data structures used in each instance of the ASA are:
+<list style="symbols">
+<t>The resource_pool, for example an ordered list of available resources. Depending on the nature of the resource, units of resource are split when appropriate, and a background garbage collector recombines split resources if they are returned to the pool.
+</t>
+<t>
+The delegated_list, where a delegator stores the resources it has given to consumers routers.
+Possible main logic flows are below, using a threaded implementation model. The transformation to an event loop model should be apparent - each thread would correspond to one event in the event loop.
+</t></list>
+</t>
+<t>
+The GRASP objectives are as follows:
+<list style="none">
+<t>
+["EX1.Resource", flags, loop_count, value]
+where the value depends on the resource concerned, but will typically include its size and identification.
+</t>
+<t>
+["EX1.Params", flags, loop_count, value]
+where the value will be, for example, a JSON object defining the applicable parameters.
+</t></list>
+In the outline logic flows below, these objectives are represented simply by their names.
+</t>
 
-Create empty resource pool
-Decide whether to act as master
+<t><figure>
+          <artwork><![CDATA[
+MAIN PROGRAM:
+
+Create empty resource_pool (and an associated lock)
+Create empty delegated_list
+Determine whether to act as master
 if master:
-  Obtain initial resources from NOC and add to pool
-  Obtain EX1.Params values from NOC, or use default values
+    Obtain initial resource_pool contents from NOC
+    Obtain value of EX1.Params from NOC
 Register ASA with GRASP
-Register objectives EX1 and EX1.Params
+Register GRASP objectives EX1.Resource and EX1.Params
 if master:
-  Start FLOODER thread to flood EX1.Params
-  Start SYNCHRONIZER listener thread for EX1.Params
-Start MAIN_NEGOTIATOR and GARBAGE_COLLECTOR threads
+    Start FLOODER thread to flood EX1.Params
+    Start SYNCHRONIZER listener for EX1.Params
+Start MAIN_NEGOTIATOR thread for EX1.Resource
 if not master:
-  Obtain value of EX1.Params (from flood cache or via M_SYN message)
-Start ASSIGN thread
-while True:
-  if resource pool is low:
-    Calculate needed amount of resource
-    Discover peers (M_DISCOVER / M_RESPONSE)
-    Choose a peer (prefer good_peer if available)
-    Send M_REQ_NEG("EX1", peer)
-    Wait for response (M_NEGOTIATE, M_END or M_WAIT)
-    if OK:
-      if offered resource is sufficient:
-        Negotiation succeeded: Send M_END + O_ACCEPT
-        Add resource to pool
-        good_peer = peer
-      else:
-        Fail negotiation: Send M_END + O_DECLINE
-  sleep(10s)
-	
-MAIN_NEGOTIATOR Thread :
-
-while True:
-  Wait for M_REQ_NEG for EX1
-  start a separate new NEGOTIATOR thread
-   (allows simultaneous negotiations)
-	
-NEGOTIATOR Thread:	
-
-Fetch available resource from pool
-if OK:
-  Offer resource to peer: Send M_NEGOTIATE for EX1 objective
-  if OK:
-    Received M_END + O_ACCEPT
-    Negotiation succeeded	
-  else:
-    Received M_END + O_DECLINE or other error
-    Return resource to pool
-else:
-  Fail negotiation: Send  M_END + O_DECLINE
-	
-ASSIGN Thread:
-
-while True:
-  wait for resource request from managed entity
-  get resource from pool
-  if OK:
-    assign resource to managed entity
-  else:
-    signal main thread that pool is low
-		
-GARBAGE_COLLECTOR Thread:
-
-while True:
-  return unused resources to pool
-  sleep(5s)
-	
-SYNCHRONIZER Thread:
-
-while True:
-  wait for  M_REQ_SYN message for EX1.Params
-  reply with M_SYNCH message for EX1.Params
-	
-FLOODER Thread:
-
-while True:
-  send M_FLOOD message for EX1.Params
-  sleep(60s)
-	
+    Obtain value of EX1.Params from GRASP flood or synchronization
+    Start DELEGATOR thread
+Start GARBAGE_COLLECTOR thread
+do forever:
+    good_peer = none
+    if resource_pool is low:
+        calculate amount A of resource needed
+        discover peers using GRASP M_DISCOVER / M_RESPONSE
+        if good_peer in peers:
+            peer = good_peer
+        else:
+            peer =  #any choice among peers
+            grasp.request_negotiate("EX1.Resource", peer)
+            i.e., send M_REQ_NEG
+            wait for response (M_NEGOTIATE, M_END or M_WAIT)
+            if OK:
+                if offered amount of resource sufficient:
+                    send M_END + O_ACCEPT #negotiation succeeded
+                    add resource to pool
+                    good_peer = peer
+                else:
+                    send M_END + O_DECLINE #negotiation failed
+    sleep() #sleep time depends on application scenario
 ]]></artwork>
         </figure></t>
-    </section>
-    <section title="Event Loop Example">
-    <t>TBD</t>
-    </section>
-    </section>
+
+<t><figure>
+          <artwork><![CDATA[
+MAIN_NEGOTIATOR thread:
+
+do forever:
+    grasp.listen_negotiate("EX1.Resource")
+    i.e., wait for M_REQ_NEG
+    start a separate new NEGOTIATOR thread for requested amount A
+]]></artwork>
+        </figure></t>
+
+<t><figure>
+          <artwork><![CDATA[
+NEGOTIATOR thread:
+	
+Request resource amount A from resource_pool
+if not OK:
+    while not OK and A > Amin:
+        A = A-1
+        Request resource amount A from resource_pool
+if OK:
+    offer resource amount A to peer by GRASP M_NEGOTIATE
+    if OK:
+        received M_END + O_ACCEPT #negotiation succeeded
+    else:
+        received M_END + O_DECLINE or other error #negotiation failed
+        
+else:
+    send M_END + O_DECLINE #negotiation failed
+]]></artwork>
+        </figure></t>
+
+<t><figure>
+          <artwork><![CDATA[
+DELEGATOR thread:
+
+do forever:
+    wait for request or release for resource amount A
+    if request:
+        get resource amount A from resource_pool
+        if OK:
+            delegate resource to consumer
+            record in delegated_list
+        else:
+	          signal failure to consumer
+            signal main thread that resource_pool is low
+    else:
+        return resource amount A to resource_pool
+]]></artwork>
+        </figure></t>
+
+<t><figure>
+          <artwork><![CDATA[
+SYNCHRONIZER thread:
+
+do forever:
+  wait for  M_REQ_SYN message for EX1.Params
+  reply with M_SYNCH message for EX1.Params
+]]></artwork>
+        </figure></t>
+
+<t><figure>
+          <artwork><![CDATA[	
+FLOODER thread:
+
+do forever:
+  send M_FLOOD message for EX1.Params
+  sleep() #sleep time depends on application scenario
+
+]]></artwork>
+        </figure></t>
+
+<t><figure>
+          <artwork><![CDATA[
+GARBAGE_COLLECTOR thread:
+
+do forever:
+    search resource_pool for adjacent resources
+    merge adjacent resources
+    sleep() #sleep time depends on application scenario
+]]></artwork>
+        </figure></t>
+
+</section>
   </back>
 </rfc>
