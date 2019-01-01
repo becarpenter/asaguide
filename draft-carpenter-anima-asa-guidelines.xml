@@ -787,7 +787,7 @@ do forever:
             Delegate resource to consumer
             Record in delegated_list
         else:
-	          Signal failure to consumer
+            Signal failure to consumer
             Signal main thread that resource_pool is low
     else:
         Delete resource from delegated_list
