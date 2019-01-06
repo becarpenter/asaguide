@@ -13,7 +13,7 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-06" ipr="trust200902">
+<rfc category="info" docName="draft-carpenter-anima-asa-guidelines-07" ipr="trust200902">
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
 
@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="2" month="January" year="2019"/>
+    <date day="x" month="xxxxxx" year="2019"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -606,7 +606,14 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-06, 2018-01-02:
+    <t>draft-carpenter-anima-asa-guidelines-07, 2019-xx-xx:
+      <vspace blankLines="1"/>
+      tbd
+      <vspace blankLines="1"/>
+      Editorial corrections.
+      </t>  
+  
+    <t>draft-carpenter-anima-asa-guidelines-06, 2018-01-07:
       <vspace blankLines="1"/>
       Expanded and improved example logic flow.
       <vspace blankLines="1"/>
