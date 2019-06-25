@@ -21,7 +21,7 @@
       <organization abbrev="Univ. of Auckland"/>
       <address>
         <postal>
-          <street>Department of Computer Science</street>
+          <street>School of Computer Science</street>
           <street>University of Auckland</street>
           <street>PB 92019</street>
           <city>Auckland</city>
@@ -73,7 +73,7 @@
 			</address>
 		</author>
 
-    <date day="x" month="xxxxxx" year="2019"/>
+    <date day="25" month="June" year="2019"/>
 
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
@@ -110,7 +110,7 @@
     <t>ASAs must be distinguished from other forms of software component. They are
     components of network or service management; they do not in themselves provide
     services. For example, the services envisaged for network function virtualisation
-    <xref target="I-D.irtf-nfvrg-gaps-network-virtualization"/>
+    <xref target="RFC8568"/>
     or for service function chaining <xref target="RFC7665"/>
     might be managed by an ASA rather than by traditional configuration tools.</t>
          
@@ -122,6 +122,8 @@
      otherwise.  Of course it also interacts with the specific targets of
      its function, using any suitable mechanism.  Unless its function is
      very simple, the ASA will need to handle overlapping asynchronous operations.
+     This will require either a multi-threaded implementation, or a logically
+     equivalent event loop structure.
      It may therefore be a quite complex piece of software in its own right,
      forming part of the application layer above the ANI."</t>
      
@@ -140,7 +142,13 @@
     </section>
 
     <section anchor="structure" title="Logical Structure of an Autonomic Service Agent">
-    <t>As mentioned above, all but the simplest ASAs will be multi-threaded programs.</t>
+    <t>As mentioned above, all but the simplest ASAs will need to suport asynchronous operations.
+    Not all programming environments explicitly support multi-threading. In that case, an 'event loop' style of
+    implementation should be adopted, in which case each thread would be implemented as an event handler
+    called in turn by the main loop. For this, the GRASP API (<xref target="api"/>) must provide
+    non-blocking calls. If necessary, the GRASP session identifier will be used to distinguish
+    simultaneous operations.
+    </t>
     <t>A typical ASA will have a main thread that performs various initial housekeeping actions such as:
     <list style="symbols">
     <t>Obtain authorization credentials.</t>
@@ -153,23 +161,20 @@
     </list>
     </t>
     <t>The logic of the main loop will depend on the details of the autonomic function concerned.
-    Whenever asynchronous operations are required, extra threads will be launched. Examples of
-    such threads include:
+    Whenever asynchronous operations are required, extra threads will be launched, or events
+    added to the event loop. Examples include:
     <list style="symbols">
-    <t>A background thread to repeatedly flood an objective to the AN, so that any ASA can receive the objective's latest value.</t>
-    <t>A thread to accept incoming synchronization requests for an objective managed by this ASA.</t>
-    <t>A thread to accept incoming negotiation requests for an objective managed by this ASA,
-    and then to conduct the resulting negotiation with the counterpart ASA.</t>
-    <t>A thread to manage subsidiary non-autonomic devices directly.</t>
+    <t>Repeatedly flood an objective to the AN, so that any ASA can receive the objective's latest value.</t>
+    <t>Accept incoming synchronization requests for an objective managed by this ASA.</t>
+    <t>Accept incoming negotiation requests for an objective managed by this ASA,
+    and then conduct the resulting negotiation with the counterpart ASA.</t>
+    <t>Manage subsidiary non-autonomic devices directly.</t>
     </list></t>
-    <t>These threads should all either exit after their job is done, or enter a wait state for new work, to avoid
-    blocking other threads unnecessarily.</t>
-    <t>Not all programming environments explicitly support multi-threading. In such cases, an 'event loop' style of
-    implementation could be adopted, in which case each of the above threads would be implemented as an event handler
-    called in turn by the main loop. In this case, the GRASP API (<xref target="api"/>) must provide
-    non-blocking calls. If necessary, the GRASP session identifier will be used to distinguish simultaneous operations.
-    </t>
-    <t>According to the degree of parallelism needed by the application, some of these threads might be
+    <t>These threads or events should all either exit after their job is done, or 
+    enter a wait state for new work, to avoid
+    blocking others unnecessarily.</t>
+    
+    <t>According to the degree of parallelism needed by the application, some of these threads or events might be
     launched in multiple instances. In particular, if negotiation sessions with other ASAs are expected to
     be long or to involve wait states, the ASA designer might allow for multiple simultaneous negotiating
     threads, with appropriate use of queues and locks to maintain consistency.</t>
@@ -512,7 +517,9 @@ Undeployed ------>|              |------> Undeployed
     <section anchor="security" title="Security Considerations">
       <t>ASAs are intended to run in an environment that is protected by the Autonomic Control Plane
       <xref target="I-D.ietf-anima-autonomic-control-plane"/>, admission to which depends on an initial
-      secure bootstrap process <xref target="I-D.ietf-anima-bootstrapping-keyinfra"/>. However, this
+      secure bootstrap process <xref target="I-D.ietf-anima-bootstrapping-keyinfra"/>. In some deployments,
+      a secure partition of the link layer might be used instead
+      <xref target="I-D.carpenter-anima-l2acp-scenarios"/>. However, this
       does not relieve ASAs of responsibility for security. In particular, when ASAs configure or manage
       network elements outside the ACP, they must use secure techniques and carefully validate any incoming
       information. As appropriate to their specific functions, ASAs should take account of relevant privacy 
@@ -552,6 +559,7 @@ Undeployed ------>|              |------> Undeployed
       <?rfc include='reference.RFC.7575'?>
       <?rfc include='reference.RFC.6973'?>
       <?rfc include='reference.RFC.7665'?>
+      <?rfc include='reference.RFC.8568'?>
       <?rfc include='reference.I-D.ietf-anima-reference-model'?>
       <?rfc include='reference.I-D.peloso-anima-autonomic-function'?>
       <?rfc include='reference.I-D.ciavaglia-anima-coordination'?>
@@ -559,7 +567,7 @@ Undeployed ------>|              |------> Undeployed
       <?rfc include='reference.I-D.ietf-core-yang-cbor'?>
       <?rfc include='reference.I-D.ietf-anima-stable-connectivity'?>
       <?rfc include='reference.I-D.ietf-anima-prefix-management'?>
-      <?rfc include='reference.I-D.irtf-nfvrg-gaps-network-virtualization'?>      
+      <?rfc include='reference.I-D.carpenter-anima-l2acp-scenarios'?>      
       
       <reference anchor="DeMola06">
         <front>
@@ -606,9 +614,9 @@ Undeployed ------>|              |------> Undeployed
     </references>
     
   <section anchor="changes" title="Change log [RFC Editor: Please remove]">
-    <t>draft-carpenter-anima-asa-guidelines-07, 2019-xx-xx:
+    <t>draft-carpenter-anima-asa-guidelines-07, 2019-06-25:
       <vspace blankLines="1"/>
-      tbd
+      Improved explanation of threading vs event-loop
       <vspace blankLines="1"/>
       Editorial corrections.
       </t>  
@@ -682,7 +690,7 @@ In theory a network could include any number of masters and any number of delega
 An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If a master exits, its entire spare pool is lost. The logic for using stable storage and for crash receovery is not included below.
 </t>
 <t>
-The description below doesn't implement GRASP's 'dry run' function. That would mean temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout expires.
+The description below does not implement GRASP's 'dry run' function. That would require temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout expires.
 </t>
 <t>
 The main data structures used in each instance of the ASA are:
