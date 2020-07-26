@@ -74,7 +74,7 @@
         <email>pierre.peloso@nokia.com</email>
       </address>
     </author>
-    <date day="20" month="July" year="2020"/>
+    <date day="25" month="July" year="2020"/>
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
       for autonomic networks, as a contribution to describing an autonomic ecosystem.
@@ -634,9 +634,10 @@ Undeployed ------>|              |------> Undeployed
     </references>
     <section anchor="changes" numbered="true" toc="default">
       <name>Change log [RFC Editor: Please remove]</name>
-      <t>draft-carpenter-anima-asa-guidelines-09, 2020-07-20:</t>
+      <t>draft-carpenter-anima-asa-guidelines-09, 2020-07-25:</t>
       <ul spacing="compact">
       <li>Additional text on future authorization.</li>
+      <li>Editorial fixes</li>
       </ul>
       
       <t>draft-carpenter-anima-asa-guidelines-08, 2020-01-10:</t>
@@ -704,21 +705,21 @@ Undeployed ------>|              |------> Undeployed
       <t>A complete autonomic function for a resource would consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="I-D.ietf-anima-prefix-management" format="default"/>. In this case, an instance of the ASA would exist in each delegating router.
 </t>
       <t>
-An underlying assumption is that there is an initial source of the resource in question, referred to here as a master ASA. The other ASAs, known as delegators, obtain supplies of the resource from the master, and then delegate quantities of the resource to consumers that request it, and recover it when no longer needed.
+An underlying assumption is that there is an initial source of the resource in question, referred to here as an origin ASA. The other ASAs, known as delegators, obtain supplies of the resource from the origin, and then delegate quantities of the resource to consumers that request it, and recover it when no longer needed.
 </t>
       <t>
-Another assumption is there is a set of network wide policy parameters, which the master will provide to the delegators. These parameters will control how the delegators decide how much resource to provide to consumers.
-Thus the ASA logic has two operating modes: master and delegator. When running as a master, it starts by obtaining a quantity of the resource from the NOC, and it acts as a source of policy parameters, via both GRASP flooding and GRASP synchronization. (In some scenarios, flooding or synchronization alone might be sufficient, but this example includes both.)
+Another assumption is there is a set of network wide policy parameters, which the origin will provide to the delegators. These parameters will control how the delegators decide how much resource to provide to consumers.
+Thus the ASA logic has two operating modes: origin and delegator. When running as an origin, it starts by obtaining a quantity of the resource from the NOC, and it acts as a source of policy parameters, via both GRASP flooding and GRASP synchronization. (In some scenarios, flooding or synchronization alone might be sufficient, but this example includes both.)
 </t>
       <t>
 When running as a delegator, it starts with an empty resource pool, it acquires the policy parameters by GRASP synchronization, and it delegates quantities of the resource to consumers that request it. 
-Both as a master and as a delegator, when its pool is low it seeks quantities of the resource by requesting GRASP negotiation with peer ASAs. When its pool is sufficient, it hands out resource to peer ASAs in response to negotiation requests. Thus, over time, the initial resource pool held by the master will be shared among all the delegators according to demand.
+Both as an origin and as a delegator, when its pool is low it seeks quantities of the resource by requesting GRASP negotiation with peer ASAs. When its pool is sufficient, it hands out resource to peer ASAs in response to negotiation requests. Thus, over time, the initial resource pool held by the origin will be shared among all the delegators according to demand.
 </t>
       <t>
-In theory a network could include any number of masters and any number of delegators, with the only condition being that each master's initial resource pool is unique. A realistic scenario is to have exactly one master and as many delegators as you like. A scenario with no master is useless.
+In theory a network could include any number of origins and any number of delegators, with the only condition being that each origin's initial resource pool is unique. A realistic scenario is to have exactly one origin and as many delegators as you like. A scenario with no origin is useless.
 </t>
       <t>
-An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If a master exits, its entire spare pool is lost. The logic for using stable storage and for crash recovery is not included in the pseudocode below.
+An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If an origin exits, its entire spare pool is lost. The logic for using stable storage and for crash recovery is not included in the pseudocode below.
 </t>
       <t>
 The description below does not implement GRASP's 'dry run' function. That would require temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout expires.
@@ -759,17 +760,17 @@ MAIN PROGRAM:
 
 Create empty resource_pool (and an associated lock)
 Create empty delegated_list
-Determine whether to act as master
-if master:
+Determine whether to act as origin
+if origin:
     Obtain initial resource_pool contents from NOC
     Obtain value of EX1.Params from NOC
 Register ASA with GRASP
 Register GRASP objectives EX1.Resource and EX1.Params
-if master:
+if origin:
     Start FLOODER thread to flood EX1.Params
     Start SYNCHRONIZER listener for EX1.Params
 Start MAIN_NEGOTIATOR thread for EX1.Resource
-if not master:
+if not origin:
     Obtain value of EX1.Params from GRASP flood or synchronization
     Start DELEGATOR thread
 Start GARBAGE_COLLECTOR thread
