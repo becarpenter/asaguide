@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This is built from a template for a generic Internet Draft. Suggestions for
-     improvement welcome - write to Brian Carpenter, brian.e.carpenter @ gmail.com 
-     This can be converted using the Web service at https://xml2rfc.tools.ietf.org/ -->
 <!DOCTYPE rfc SYSTEM "rfc2629-xhtml.ent">
 <?rfc toc="yes"?>
 <!-- You want a table of contents -->
@@ -13,11 +10,11 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-carpenter-anima-asa-guidelines-09" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-ietf-anima-asa-guidelines-00" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
   <!-- xml2rfc v2v3 conversion 2.37.3 -->
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
-    <seriesInfo name="Internet-Draft" value="draft-carpenter-anima-asa-guidelines-09"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-asa-guidelines-00"/>
     
     <author fullname="Brian Carpenter" initials="B. E." surname="Carpenter">
       <organization abbrev="Univ. of Auckland"/>
@@ -74,7 +71,7 @@
         <email>pierre.peloso@nokia.com</email>
       </address>
     </author>
-    <date day="25" month="July" year="2020"/>
+    <date year="2020"/>
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
       for autonomic networks, as a contribution to describing an autonomic ecosystem.
@@ -243,7 +240,7 @@
         <name>Interaction with policy mechanism</name>
         <t>At the time of writing, the policy (or "Intent") mechanism for the ANI is undefined
      and is regarded as a research topic. It is expected to operate by an information distribution
-     mechanism (e.g. <xref target="I-D.liu-anima-grasp-distribution"/>) that can reach all autonomic
+     mechanism (e.g. <xref target="I-D.ietf-anima-grasp-distribution"/>) that can reach all autonomic
      nodes, and therefore every ASA. However, each ASA must be capable of operating "out of the box" in the
      absence of locally defined policy, so every ASA implementation must include carefully chosen default values
      and settings for all policy parameters.</t>
@@ -591,7 +588,7 @@ Undeployed ------>|              |------> Undeployed
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ciavaglia-anima-coordination.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-anima-grasp-api.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-core-yang-cbor.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.liu-anima-grasp-distribution.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-anima-grasp-distribution.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-anima-prefix-management.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.carpenter-anima-l2acp-scenarios.xml"/>
         <reference anchor="DeMola06">
@@ -634,6 +631,13 @@ Undeployed ------>|              |------> Undeployed
     </references>
     <section anchor="changes" numbered="true" toc="default">
       <name>Change log [RFC Editor: Please remove]</name>
+      
+      <t>draft-ietf-anima-asa-guidelines-00, 2020-11:</t>
+      <ul spacing="compact">
+      <li>Adopted by WG</li>
+      <li>Editorial fixes</li>
+      </ul>
+      
       <t>draft-carpenter-anima-asa-guidelines-09, 2020-07-25:</t>
       <ul spacing="compact">
       <li>Additional text on future authorization.</li>
