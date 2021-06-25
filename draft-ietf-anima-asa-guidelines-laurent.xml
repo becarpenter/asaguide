@@ -32,7 +32,7 @@
       </address>
     </author>
     <author fullname="Laurent Ciavaglia" initials="L." surname="Ciavaglia">
-      <organization>Rakuten</organization>
+      <organization>Rakuten Mobile</organization>
       <address>
         <postal>
           <street></street>
@@ -75,7 +75,7 @@
     <abstract>
       <t>This document proposes guidelines for the design of Autonomic Service Agents
       for autonomic networks. Autonomic Service Agents, together with the Autonomic Network
-      Infrastructure, the Autonomic Control Plane and the Generic Autonomic Signaling Protocol, constitute base elements of a so-called autonomic networks ecosystem.
+      Infrastructure, the Autonomic Control Plane and the Generic Autonomic Signaling Protocol constitute base elements of a so-called autonomic networks ecosystem.
       </t>
     </abstract>
   </front>
@@ -113,7 +113,7 @@
     (in the case of a distributed function) or whole."</t>
       <t>ASAs must be distinguished from other forms of software component. They are
     components of network or service management; they do not in themselves provide
-    services to end users. They do however provide management services to operators or administrators.  For example, the services envisaged for network function virtualisation
+    services to end users. They do however provide management services to network operators and administrators.  For example, the services envisaged for network function virtualisation
     <xref target="RFC8568"/>
     or for service function chaining <xref target="RFC7665"/>
     might be managed by an ASA rather than by traditional configuration tools.</t>
@@ -126,7 +126,7 @@
     or even exchanging IGP security keys could be performed securely in
     this way. This document mainly addresses issues affecting quite complex ASAs, but the most
     useful ones may in fact be rather simple developments from existing scripts.</t>
-      <t>The reference model <xref target="RFC8993"/> explains
+      <t>The reference model <xref target="RFC8993"/> for autonomic networks explains
      further the functionality of ASAs by adding
      "[An ASA is] a process that makes use of the features provided
      by the ANI to achieve its own goals, usually including interaction
@@ -215,7 +215,7 @@
       </section>
       <section anchor="api" numbered="true" toc="default">
         <name>Interaction with GRASP and its API</name>
-        <t>GRASP <xref target="I-D.ietf-anima-grasp"/> is likely to run as a separate process
+        <t>GRASP <xref target="RFC8990"/> is likely to run as a separate process
      with its API <xref target="RFC8991"/> available in user space. Thus ASAs may operate without
      special privilege, unless they need it for other reasons. The ASA's view of GRASP is built around GRASP
      objectives (<xref target="objdes"/>), defined as data structures containing administrative information
@@ -251,9 +251,9 @@
       <section numbered="true" toc="default">
         <name>Interaction with policy mechanisms</name>
         <t>	At the time of writing, the policy mechanisms for the ANI are undefined. In particular, the use of declarative policies (aka Intents) for the definition and management of ASAs behaviors remains a research topic <xref target="I-D.irtf-nmrg-ibn-concepts-definitions"/>.</t>
-		<t> In the cases where ASAs are defined as closed control loops, the specifications defined in <xref target="ZSM009-1"> regarding imperative an declarative goal statements may be applicable.</t>
+		<t> In the cases where ASAs are defined as closed control loops, the specifications defined in <xref target="ZSM009-1"/> regarding imperative and declarative goal statements may be applicable.</t>
 		<t>In the ANI, policy dissemination is expected to operate by an information distribution
-     mechanism (e.g. <xref target="I-D.ietf-anima-grasp-distribution"/>) that can reach all autonomic
+     mechanism (e.g. <xref target="RFC8990"/>) that can reach all autonomic
      nodes, and therefore every ASA. However, each ASA must be capable of operating "out of the box" in the
      absence of locally defined policy, so every ASA implementation must include carefully chosen default values and settings for all policy parameters.</t>
       </section>
@@ -278,7 +278,7 @@
     <section anchor="objdes" numbered="true" toc="default">
       <name>Design of GRASP Objectives</name>
       <t>The general rules for the format of GRASP Objective options, their names, and IANA registration are
-    given in <xref target="I-D.ietf-anima-grasp"/>. Additionally that document discusses various general
+    given in <xref target="RFC8990"/>. Additionally that document discusses various general
     considerations for the design of objectives, which are not repeated here. However, note that
     the GRASP protocol, like HTTP, does not provide transactional integrity. In particular, steps
     in a GRASP negotiation are not idempotent. The design of a GRASP objective and the logic flow of the
@@ -349,7 +349,7 @@ Undeployed ------>|              |------> Undeployed
         <t>Before being able to instantiate and run ASAs, the operator will first provision the
 	infrastructure with the sets of ASA software corresponding to its needs and objectives. 
 	The provisioning of the infrastructure is realized in the installation phase and consists in 
-	installing (or checking the availability of) the pieces of software of the different ASA 
+	installing (or checking the availability of) the pieces of software of the different ASAs 
 	in a set of Installation Hosts. Installation Hosts may be nodes of an autonomic network, or servers dedicated to storing the software images of the different ASAs.</t>
         <t>There are 3 properties applicable to the installation of ASAs:
         </t>
@@ -379,7 +379,7 @@ Undeployed ------>|              |------> Undeployed
 		in the decoupled mode, the placement function is mandatory, even though it can be as simple 
 		as an explicit list of Installation Hosts.</dd>
           </dl>
-          <t>The main output of the installation phase is an up-to-date directory of installed ASAs which corresponds to [list of ASAs] installed on [list of Installation Hosts]. This output is also useful for the coordination function and corresponds to the static interaction map (see <xref target="coorda"/>).</t>
+          <t>The main output of the installation phase is an up-to-date list of installed ASAs which corresponds to [list of ASAs] installed on [list of Installation Hosts]. This output is also useful for the coordination function and corresponds to the static interaction map (see <xref target="coorda"/>).</t>
           <t>The condition to validate in order to pass to next phase is to ensure that [list of ASAs] are well installed on [list of Installation Hosts].
 		The state of the ASAs at the end of the installation phase is: installed. (not instantiated).
 		The following minimum set of primitives to support the installation of ASAs could be:  install(list of ASAs, Installation_target_Infrastructure, ASA  placement function), and un-install (list of ASAs).</t>
@@ -407,10 +407,10 @@ Undeployed ------>|              |------> Undeployed
           <ol spacing="normal" type="%d">
             <li>determine the scope of autonomic functions by instructing which of the network resources have to be managed by which autonomic function (and more precisely by which release of the ASA software code, e.g. version number or provider),</li>
             <li>determine how the autonomic functions are organized by instantiating a set of ASA across one or more autonomic nodes and instructing them
-accordingly about the other ASAs in the set as necessary..</li>
+accordingly about the other ASAs in the set as necessary.</li>
           </ol>
           <t>
-				Additionally in this phase, the operator may want to set goals to autonomic functions, by configuring GRASP objectives.
+				Additionally in this phase, the operator may want to set goals to autonomic functions e.g. by configuring GRASP objectives.
           </t>
           <t>The operator's goal can be summarized in an instruction to the ANIMA ecosystem matching the following format:
           </t>
@@ -573,7 +573,7 @@ helpful for this ASA design goal of "test-before-make".
     <section anchor="security" numbered="true" toc="default">
       <name>Security Considerations</name>
       <t>ASAs are intended to run in an environment that is protected by the Autonomic Control Plane
-      <xref target="I-D.ietf-anima-autonomic-control-plane"/>, admission to which depends on an initial
+      <xref target="RFC8994"/>, admission to which depends on an initial
       secure bootstrap process such as <xref target="RFC8995"/>. 
       Such an ACP can provide keying material for mutual authentication between ASAs as well
       as confidential communication channels for messages between ASAs.
@@ -630,9 +630,9 @@ helpful for this ASA design goal of "test-before-make".
       <references>
         <name>Normative References</name>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7049.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.RFC8994.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.RFC8995.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.RFC8990.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8994.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8995.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8990.xml"/>
       </references>
       <references>
         <name>Informative References</name>
@@ -642,13 +642,13 @@ helpful for this ASA design goal of "test-before-make".
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8568.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8368.xml"/>
         <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.6241.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.RFC8993.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8993.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.peloso-anima-autonomic-function.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ciavaglia-anima-coordination.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.RFC8991.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8991.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-core-yang-cbor.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-anima-grasp-distribution.xml"/>
-      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.RFC8992.xml"/>
+      <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8992.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.carpenter-anima-l2acp-scenarios.xml"/>
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-nmrg-ibn-concepts-definitions.xml"/>
         <reference anchor="DeMola06">
@@ -776,9 +776,9 @@ helpful for this ASA design goal of "test-before-make".
     <section anchor="eg" numbered="true" toc="default">
       <name>Example Logic Flows</name>
       <t>This appendix describes generic logic flows for an Autonomic Service Agent (ASA) for resource management. Note that these are illustrative examples, and in no sense requirements. As long as the rules of GRASP are followed, a real implementation could be different. The reader is assumed to be familiar with GRASP
-<xref target="I-D.ietf-anima-grasp"/> and its conceptual API <xref target="I-D.ietf-anima-grasp-api"/>.
+<xref target="RFC8990"/> and its conceptual API <xref target="RFC8991"/>.
 </t>
-      <t>A complete autonomic function for a resource would consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="I-D.ietf-anima-prefix-management"/>. In this case, an instance of the ASA would exist in each delegating router.
+      <t>A complete autonomic function for a resource would consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="RFC8992"/>. In this case, an instance of the ASA would exist in each delegating router.
 </t>
       <t>
 An underlying assumption is that there is an initial source of the resource in question, referred to here as an origin ASA. The other ASAs, known as delegators, obtain supplies of the resource from the origin, and then delegate quantities of the resource to consumers that request it, and recover it when no longer needed.
