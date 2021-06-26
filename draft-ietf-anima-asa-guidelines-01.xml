@@ -10,11 +10,11 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-ietf-anima-asa-guidelines-02" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-ietf-anima-asa-guidelines-01" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
   <!-- xml2rfc v2v3 conversion 2.37.3 -->
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
-    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-asa-guidelines-02"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-asa-guidelines-01"/>
     
     <author fullname="Brian Carpenter" initials="B. E." surname="Carpenter">
       <organization abbrev="Univ. of Auckland"/>
@@ -714,12 +714,6 @@ helpful for this ASA design goal of "test-before-make".
     </references>
     <section anchor="changes" numbered="true" toc="default" removeInRFC="true">
       <name>Change log</name>
-      
-      <t>draft-ietf-anima-asa-guidelines-02, 2021-xx-xx:</t>
-      <ul spacing="compact">
-      <li>TBD</li>
-      <li>Editorial fixes</li>
-      </ul>
       
       <t>draft-ietf-anima-asa-guidelines-01, 2021-06-27:</t>
       <ul spacing="compact">
