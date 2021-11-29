@@ -290,11 +290,11 @@
     is to manage a resource must interact with that resource. An ASA whose purpose
     is to manage an entity that is already managed by local software must interact
     with that software. For example, if such management is performed by NETCONF
-    <xref target="RFC6241"/>,
-    the ASA must interact directly with the NETCONF server in the same node,
-    to avoid any inconsistency between configuration changes delivered
+    <xref target="RFC6241"/>, the ASA must interact with the NETCONF
+    server as an independent NETCONF client in the same node to avoid
+    any inconsistency between configuration changes delivered
     via NETCONF and configuration changes made by the ASA.</t>
-    
+
       <t>In an environment where systems are virtualized and specialized using
     techniques such as network function virtualization or network slicing,
     there will be a design choice whether ASAs are deployed once per physical node
@@ -765,7 +765,7 @@ helpful for this ASA design goal of "test-before-make".
       
       <t>draft-ietf-anima-asa-guidelines-05, 2021-12-xx:</t>
       <ul spacing="compact">
-      <li>TBD</li>
+      <li>Clarified NETCONF wording.</li>
       </ul>
       
       <t>draft-ietf-anima-asa-guidelines-04, 2021-11-20:</t>
