@@ -98,6 +98,7 @@
      the Autonomic Control Plane (ACP) <xref target="RFC8994"/> and
      the Generic Autonomic Signaling Protocol (GRASP) <xref target="RFC8990"/>.
      A general introduction to this environment may be found at <xref target="IPJ"/>,
+     which also includes explanatory diagrams,
      and a summary of terminology is in <xref target="terminology"/>.</t>
      <t>
      This document is a contribution to the description of an autonomic networking ecosystem, recognizing that
@@ -132,7 +133,7 @@
     or for service function chaining <xref target="RFC7665"/>
     might be managed by an ASA rather than by traditional configuration tools.</t>
     <t>Another example is that an existing script running within a router
-    to locally monitor or configure functions or services could be upgraded as an ASA
+    to locally monitor or configure functions or services could be upgraded to an ASA
     that could communicate with peer scripts on neighboring or remote routers.
     A high-level API will allow such upgraded scripts to take full
     advantage of the secure ACP and the discovery, negotiation and synchronization features
@@ -152,12 +153,19 @@
      forming part of the application layer above the ANI."</t>
       <t>As mentioned, there will certainly be simple ASAs that manage a single
      objective in a straightforward way and do not need asynchronous operations.
-     In such a case, many aspects of the current document do not apply. However, in
+     In nodes where computing power and memory space are limited,
+     ASAs should run at a much lower frequency than the primary
+     workload, so CPU load should not be a big issue, but memory footprint
+     in a constrained node is certainly a concern. ASAs installed
+     in constrained devices will have limited functionality.
+     In such cases, many aspects of the current document do not apply. However, in
      the general case, an ASA may be a relatively complex software
      component that will in many cases control and monitor simpler entities
      in the same or remote host(s). For example, a device controller that manages
      tens or hundreds of simple devices might contain a single ASA. </t>
-      <t>The remainder of this document offers guidance on the design of such ASAs.</t>
+      <t>The remainder of this document offers guidance on the design of complex ASAs.
+      Some of the material may be familiar to those experienced in distributed
+      fault-tolerant and real-time control systems.</t>
     </section>
     <section anchor="structure" numbered="true" toc="default">
       <name>Logical Structure of an Autonomic Service Agent</name>
@@ -190,7 +198,7 @@
       </ul>
       <t>These threads should all either exit after their job is done, or 
     enter a wait state for new work, to avoid
-    blocking others unnecessarily.</t>
+    wasting system resources.</t>
       <t>According to the degree of parallelism needed by the application, some of these threads might be
     launched in multiple instances. In particular, if negotiation sessions with other ASAs are expected to
     be long or to involve wait states, the ASA designer might allow for multiple simultaneous negotiating
@@ -198,8 +206,7 @@
       <t>The main loop itself could act as the initiator of synchronization requests or negotiation
     requests, when the ASA needs data or resources from other ASAs. In particular, the main loop should
     watch for changes in policy parameters that affect its operation. It should also do whatever is required
-    to avoid unnecessary resource consumption, such as including an arbitrary wait time in each cycle
-    of the main loop.</t>
+    to avoid unnecessary resource consumption, for example by limiting its frequency of execution.</t>
       <t>The self-monitoring thread is of considerable importance. Autonomic service agents must never fail.
     To a large extent this depends on careful coding and testing, with no unhandled error returns or exceptions, but if
     there is nevertheless some sort of failure, the self-monitoring thread should detect it, fix it
@@ -233,8 +240,8 @@
      objectives (<xref target="objdes"/>), defined as data structures containing administrative information
      such as the objective's unique name, and its current value. The format and size of the value is not
      restricted by the protocol, except that it must be possible to serialise it for transmission in 
-     CBOR <xref target="RFC8949"/>, subject only to GRASP's maximum message size as discussed
-     in <xref target="objdes"/>.</t>
+     Concise Binary Object Representation (CBOR) <xref target="RFC8949"/>, subject only to GRASP's
+     maximum message size as discussed in <xref target="objdes"/>.</t>
      
      <t>As discussed in <xref target="structure"/>, GRASP is an asynchronous protocol, and this
       document uses a multi-threading model to describe operations. In many programming environments, 
@@ -262,13 +269,12 @@
         </ul>
         <t>For further details and some additional housekeeping functions, see <xref target="RFC8991"/>.
         </t>
-        <t>This API is intended to support the various interactions expected between most ASAs, such as the
+        <t>The GRASP API is intended to support the various interactions expected between most ASAs, such as the
      interactions outlined in <xref target="structure"/>. However, if ASAs
      require additional communication between themselves, they can do so using any desired protocol,
-     even just a TLS session if that meets their needs. One option is
+     such as a TLS session over the ACP if that meets their needs. One option is
      to use GRASP discovery and synchronization as a rendez-vous mechanism between two ASAs, passing communication
-     parameters such as a TCP port number via GRASP. As noted above, the ACP can secure such communications,
-     unless there is a good reason to do otherwise.</t>
+     parameters such as a TCP port number via GRASP. As noted above, the ACP should be used to secure such communications.</t>
       </section>
       <section numbered="true" toc="default">
         <name>Interaction with policy mechanisms</name>
@@ -346,9 +352,15 @@
     
       <t>A mapping from YANG to CBOR is defined by <xref target="I-D.ietf-core-yang-cbor"/>. Subject to
     the size limit defined for GRASP messages, nothing prevents objectives using YANG in this way.</t>
+    
+    <t>It is expected that the value field of many objectives will be extended in service,
+    to add additional information.
+    This has consequences for the robustness of ASAs, as discussed in <xref target="robust"/>.</t>
     </section>
     <section anchor="life" numbered="true" toc="default">
       <name>Life Cycle</name>
+      <t>The ASA life cycle was discussed in <xref target="I-D.peloso-anima-autonomic-function"/>,
+      from which the following text was derived.</t>
       <t>In simple cases, Autonomic functions could be permanent, in the sense that ASAs are shipped as part of
     a product and persist throughout the product's life. However, in complex cases, a more likely situation is
     that ASAs need to be installed or updated dynamically, because of new requirements or
@@ -357,9 +369,9 @@
     of seamlessly replacing a running instance of an ASA with a new version needs to be
     part of the ASA's design. The implication of service continuity on the design of
     ASAs can be illustrated along the three
-	  main phases of the ASA life-cycle, namely Installation, Instantiation and Operation.</t>
+	  main phases of the ASA life cycle, namely Installation, Instantiation and Operation.</t>
       <figure anchor="Fig_LC">
-        <name>Life cycle of an Autonomic Service Agent</name>
+        <name>Life Cycle of an Autonomic Service Agent</name>
         <artwork name="" type="" align="left" alt=""><![CDATA[
 	
                   +--------------+
@@ -391,36 +403,39 @@ Undeployed ------>|              |------> Undeployed
 	in a set of Installation Hosts. Installation Hosts may be nodes of an autonomic network, or servers dedicated to storing the software images of the different ASAs.</t>
         <t>There are 3 properties applicable to the installation of ASAs:
         </t>
-        <dl newline="false" spacing="normal">
-          <dt>The dynamic installation property</dt>
-          <dd>allows installing an ASA on demand, on any	hosts compatible with the ASA.</dd>
-          <dt>The decoupling property</dt>
-          <dd>allows controlling resources of an autonomic node from a remote ASA, i.e. an ASA installed on a host machine different from the autonomic node resources.</dd>
-          <dt>The multiplicity property</dt>
-          <dd>allows controlling multiple sets of resources from a single ASA.</dd>
-        </dl>
-        <t>These three properties are very important in the context of the installation phase as their 
-	variations condition how the ASA could be installed on the infrastructure. </t>
+        <ul>
+          <li>The dynamic installation property
+          allows installing an ASA on demand, on any	hosts compatible with the ASA.</li>
+          <li>The decoupling property
+          allows controlling resources of an autonomic node from a remote ASA, i.e. an
+          ASA installed on a host machine different from the autonomic node resources.</li>
+          <li>The multiplicity property
+          allows controlling multiple sets of resources from a single ASA.</li>
+        </ul>
+        <t>These three properties are very important in the context of the installation
+        phase as their variations condition how the ASA could be installed on the infrastructure. </t>
         <section numbered="true" toc="default">
           <name>Installation phase inputs and outputs</name>
           <t>Inputs are:
           </t>
-          <dl newline="false" spacing="normal">
-            <dt>[ASA of a given type]</dt>
-            <dd> specifies which ASAs to install,</dd>
-            <dt>[Installation_target_Infrastructure]</dt>
-            <dd> specifies the candidate Installation Hosts,</dd>
-            <dt>[ASA placement function, e.g. under which criteria/constraints as defined by the operator]</dt>
-            <dd>
-		 specifies how the installation phase shall meet the operator's needs and objectives for 
-		the provision of the infrastructure. In the coupled mode, the placement function is not necessary as in that case, ASA can only be installed together with the autonomic nodes; whereas
-		in the decoupled mode, the placement function is mandatory, even though it can be as simple 
-		as an explicit list of Installation Hosts.</dd>
-          </dl>
-          <t>The main output of the installation phase is an up-to-date list of installed ASAs which corresponds to [list of ASAs] installed on [list of Installation Hosts]. This output is also useful for the coordination function and corresponds to the static interaction map (see <xref target="coorda"/>).</t>
-          <t>The condition to validate in order to pass to next phase is to ensure that [list of ASAs] are well installed on [list of Installation Hosts].
-		The state of the ASAs at the end of the installation phase is: installed. (not instantiated).
-		The following minimum set of primitives to support the installation of ASAs could be:  install(list of ASAs, Installation_target_Infrastructure, ASA  placement function), and uninstall (list of ASAs).</t>
+          <ul>
+            <li>[ASA of a given type]
+            specifies which ASAs to install.</li>
+            <li>[Installation_target_Infrastructure]
+            specifies the candidate Installation Hosts.</li>
+            <li>[ASA placement function]
+		        specifies how the installation phase will meet the operator's needs and objectives for 
+		        the provision of the infrastructure. This function is only required in the 
+		        decoupled mode. It can be as simple as an explicit list of Installation Hosts,
+		        or it could consist of operator-defined criteria and constraints. </li>
+          </ul>
+          <t>The main output of the installation phase is a [list of ASAs] installed on
+          [list of Installation Hosts]. This output is also useful for the coordination
+          function where it acts as a static interaction map (see <xref target="coordi"/>).</t>
+          <t>The condition to validate in order to pass to next phase is to ensure 
+          that [list of ASAs] are well installed on [list of Installation Hosts].
+		The state of the ASAs at the end of the installation phase is installed (but not instantiated).
+		A minimum set of primitives to support the installation of ASAs could be:  install(list of ASAs, Installation_target_Infrastructure, ASA  placement function), and uninstall (list of ASAs).</t>
         </section>
       </section>
       <section anchor="Sec_Inst" numbered="true" toc="default">
@@ -428,14 +443,15 @@ Undeployed ------>|              |------> Undeployed
         <t>We define "instantiation" as the operation of creating a single ASA instance from the corresponding piece of installed software.</t>
         <t>Once the ASAs are installed on the appropriate hosts in the network, these ASAs may start to operate.
 	From the operator viewpoint, an operating ASA means the ASA manages the network resources as per the objectives given. 
-	At the ASA local level, operating means executing their control loop/algorithm.</t>
+	At the ASA local level, operating means executing their control loop algorithm.</t>
         <t>But right before that, there are two things to take into consideration. 
 		First, there is a difference between (1) having a piece of code available to run on a host 
 		and (2) having an agent based on this piece of code running inside the host. 
 		Second, in a coupled case, determining which resources are controlled by an ASA is 
-		straightforward (the ASA runs on the same autonomic node and resources it is controlling); in a decoupled mode determining this is
+		straightforward (the ASA runs on the same autonomic node as the
+		resources it is controlling); in a decoupled mode determining this is
 		a bit more complex: a starting agent will have to either discover the set of resources it ought to control, or such information has to be communicated to the ASA.</t>
-        <t>The instantiation phase of an ASA covers both these aspects: starting the agent piece of code 
+        <t>The instantiation phase of an ASA covers both these aspects: starting the agent code 
 		(when this does not start automatically) and determining which resources have to be 
 		controlled (when this is not straightforward).</t>
         <section anchor="Sec_Inst_Goal" numbered="true" toc="default">
@@ -443,14 +459,15 @@ Undeployed ------>|              |------> Undeployed
           <t>Through this phase, the operator wants to control its autonomic network regarding at least two aspects:
           </t>
           <ol spacing="normal" type="%d">
-            <li>determine the scope of autonomic functions by instructing which of the network resources have to be managed by which autonomic function (and more precisely by which release of the ASA software code, e.g., version number or provider),</li>
-            <li>determine how the autonomic functions are organized by instantiating a set of ASA across one or more autonomic nodes and instructing them
+            <li>determine the scope of autonomic functions by instructing which network resources have to be managed by which autonomic function (and more precisely by which release of the ASA software code, e.g., version number or provider),</li>
+            <li>determine how the autonomic functions are organized by instantiating a set of ASAs across one or more autonomic nodes and instructing them
 accordingly about the other ASAs in the set as necessary.</li>
           </ol>
           <t>
 				In this phase, the operator may also want to set goals for autonomic functions, e.g., by configuring GRASP objectives.
           </t>
-          <t>The operator's goal can be summarized in an instruction to the ANIMA ecosystem matching the following format:
+          <t>The operator's goal can be summarized in an instruction to the ANIMA ecosystem matching the following format,
+          explained in detail in the next sub-section:
           </t>
           <ul empty="true" spacing="normal">
             <li>[instances of ASAs of a given type] ready to control [Instantiation_target_Infrastructure] with [Instantiation_target_parameters]</li>
@@ -460,74 +477,85 @@ accordingly about the other ASAs in the set as necessary.</li>
           <name>Instantiation phase inputs and outputs</name>
           <t>Inputs are:
           </t>
-          <dl newline="false" spacing="normal">
-            <dt>[instances of ASAs of a given type]</dt>
-            <dd>that specifies which ASAs to instantiate</dd>
-            <dt>[Instantiation_target_Infrastructure]</dt>
-            <dd>that specifies which are the resources to be managed by the autonomic function, this can be the whole network or a subset of it like a domain a technology segment or even a specific list of resources,</dd>
-            <dt>[Instantiation_target_parameters]</dt>
-            <dd>that specifies which are the GRASP objectives to be sent to ASAs (e.g., an optimization target)</dd>
-          </dl>
+          <ul>
+            <li>[instances of ASAs of a given type]
+            that specifies which ASAs to instantiate</li>
+            <li>[Instantiation_target_Infrastructure]
+            that specifies which are the resources to be managed by the autonomic function;
+            this can be the whole network or a subset of it like a domain, a physical
+            segment or even a specific list of resources,</li>
+            <li>[Instantiation_target_parameters]
+            that specifies which are the GRASP objectives to be sent to ASAs (e.g., an optimization target)</li>
+          </ul>
           <t>Outputs are:
           </t>
-          <dl newline="false" spacing="normal">
-            <dt>[Set of ASAs - Resources relations]</dt>
-            <dd>describing which resources are managed by which ASA instances, this is not a formal message, but a resulting configuration of a set of ASAs.</dd>
-          </dl>
+          <ul>
+            <li>[Set of ASAs - Resources relations]
+            describing which resources are managed by which ASA instances, this is not a formal message, but a resulting configuration of a set of ASAs.</li>
+          </ul>
         </section>
         <section anchor="Sec_Inst_Reqs" numbered="true" toc="default">
           <name>Instantiation phase requirements</name>
           <t>The instructions described in <xref target="Sec_Inst"/> could be either:
           </t>
-          <dl newline="false" spacing="normal">
-            <dt>{sent to a targeted ASA}</dt>
-            <dd>In which case, the receiving Agent will have to manage the specified list of [Instantiation_target_Infrastructure], with the [Instantiation_target_parameters].</dd>
-            <dt>{broadcast to all ASAs}</dt>
-            <dd>In which case, the ASAs would collectively determine from the list which Agent(s) would handle which [Instantiation_target_Infrastructure], with the [Instantiation_target_parameters].</dd>
-          </dl>
-          <t>These instructions may be grouped in an ASA Instance Mandate as a specific data structure. The specification of such an ASA Instance Mandate is beyond the scope of this document.</t>
+          <ul>
+            <li>Sent to a targeted ASA. 
+            In the case, the receiving Agent will have to manage the specified list of [Instantiation_target_Infrastructure], with the [Instantiation_target_parameters].</li>
+            <li>Broadcast to all ASAs. 
+            In this case, the ASAs would collectively determine from the list which Agent(s) would handle which [Instantiation_target_Infrastructure], with the [Instantiation_target_parameters].</li>
+          </ul>
+          <t>These instructions may be grouped as a specific data structure, referred
+          to as an ASA Instance Mandate. The specification of such an ASA Instance Mandate
+          is beyond the scope of this document.</t>
 		  
           <t>The conclusion of this instantiation phase is a set of ASA instances ready to operate. These ASA instances are characterized by the resources they manage, the metrics being monitored and the actions that can be executed (like modifying certain parameters values). The description of the ASA instance may be defined in an ASA Instance Manifest data structure. The specification of such an ASA Instance Manifest is beyond the scope of this document.</t>
           <t>The ASA Instance Manifest does not only serve informational
 purposes such as acknowledgement of successful instantiation to the
-operator, but is also necessary for further autonomous operations with:
+operator, but is also necessary for further autonomic operations with:
           </t>
-          <ul spacing="normal">
-            <li>the coordination entities (see <xref target="I-D.ciavaglia-anima-coordination"/>)</li>
+          <ul>
+            <li>coordinated entities (see <xref target="coordi"/>)</li>
             <li>collaborative entities with purposes such as to establish knowledge exchange (some ASAs may produce knowledge or monitor metrics that would be useful for other ASAs)</li>
           </ul>
         </section>
       </section>
       <section anchor="Sec_Operation" numbered="true" toc="default">
         <name>Operation phase</name>
-        <t>Note: This section is to be further developed in future revisions of the document, especially the implications on the design of ASAs.</t>
         <t>During the Operation phase, the operator can:
         </t>
-        <ul empty="true" spacing="normal">
-          <li>Activate/Deactivate ASA: meaning enabling those to execute their autonomic loop or not.</li>
-          <li>Modify ASAs targets: meaning setting them different objectives.</li>
-          <li>Modify ASAs managed resources: by updating the instance mandate which would specify different set of resources to manage (only applicable to decoupled ASAs).</li>
+        <ul>
+          <li>Activate/Deactivate ASAs: enable/disable their autonomic loops.</li>
+          <li>Modify ASAs targets: set different technical objectives.</li>
+          <li>Modify ASAs managed resources: update the instance mandate to
+          specify a different set of resources to manage (only applicable to decoupled ASAs).</li>
         </ul>
         <t>During the Operation phase, running ASAs can interact with other ASAs:
         </t>
-        <ul empty="true" spacing="normal">
+        <ul>
           <li>in order to exchange knowledge (e.g. an ASA providing traffic predictions to a load balancing ASA)</li>
-          <li>in order to collaboratively reach an objective (e.g. ASAs pertaining to the same autonomic function targeted to manage a network domain will collaborate - in the case of a load balancing function, by modifying the link metrics according to the neighboring resource loads)</li>
+          <li>in order to collaboratively reach an objective (e.g. ASAs pertaining to the same 
+          autonomic function will collaborate, e.g.,
+          in the case of a load balancing function, by modifying link metrics
+          according to neighboring resource loads)</li>
         </ul>
-        <t>During the Operation phase, running ASAs are expected to apply coordination schemes as per <xref target="coorda"/>.
+        <t>During the Operation phase, running ASAs are expected to apply coordination schemes as per <xref target="coordi"/>.
         </t>
        
-        <t>The ASA life-cycle is discussed in more detail in "A Day in the Life of an Autonomic Function" <xref target="I-D.peloso-anima-autonomic-function"/>.</t>
+        
       </section>
     </section>
-    <section anchor="coorda" numbered="true" toc="default">
+    
+    <section anchor="coordm" numbered="true" toc="default">
+      <name>Coordination and Data Models</name>
+    
+    <section anchor="coordi" numbered="true" toc="default">
       <name>Coordination between Autonomic Functions</name>
       <t>Some autonomic functions will be completely independent of each other. However, others are
     at risk of interfering with each other - for example, two different optimization functions
     might both attempt to modify the same underlying parameter in different ways. In a complete
     system, a method is needed of identifying ASAs that might interfere with each other and
-    coordinating their actions when necessary. This issue is considered in
-    "Autonomic Functions Coordination" <xref target="I-D.ciavaglia-anima-coordination"/>.</t>
+    coordinating their actions when necessary. This issue is considered in detail in
+    <xref target="I-D.ciavaglia-anima-coordination"/>.</t>
     </section>
     <section anchor="coordt" numbered="true" toc="default">
       <name>Coordination with Traditional Management Functions</name>
@@ -547,11 +575,12 @@ operator, but is also necessary for further autonomous operations with:
     </section>
     <section anchor="datam" numbered="true" toc="default">
       <name>Data Models</name>
-      <t>Management functions often include a data model, quite likely to
+      <t>Management functions often include a shared data model, quite likely to
     be expressed in a formal notation such as YANG. This aspect should not be an afterthought
     in the design of an ASA. To the contrary, the design of the ASA and of its GRASP objectives
     should match the data model; as noted in <xref target="objdes"/>, YANG serialized as CBOR may be used directly
     as the value of a GRASP objective.</t>
+    </section>
     </section>
     <section anchor="robust" numbered="true" toc="default">
       <name>Robustness</name>
@@ -560,12 +589,12 @@ operator, but is also necessary for further autonomous operations with:
      component to never fail, it is more important to design the ASA to
      assume that failures will happen and to gracefully recover from those
      failures when they occur. Hence, this section lists various aspects
-     of robustness that ASA designers should consider
+     of robustness that ASA designers should consider:
       </t>
       <ol spacing="normal" type="1">
         <li>If despite all precautions, an ASA does encounter a fatal error, it should
     in any case restart automatically and try again.
-    To mitigate a hard loop in case of persistent failure, a suitable pause
+    To mitigate a loop in case of persistent failure, a suitable pause
     should be inserted before such a restart. The length of the pause depends
     on the use case.</li>
         <li>If a newly received or calculated value for a parameter falls out of bounds, the corresponding
@@ -589,7 +618,9 @@ operator, but is also necessary for further autonomous operations with:
         <li>On the other hand, the definitions of GRASP objectives are very
         likely to be extended, using the flexibility of CBOR or JSON.
         Therefore, ASAs should be able to deal gracefully with unknown components
-        within the values of objectives.
+        within the values of objectives. The specification of an objective should
+        describe how unknown components are to be handled (ignored, logged and
+        ignored, or rejected as an error).
         </li>
         <li>If an ASA receives either an Invalid message (M_INVALID) or a Negotiation End
     message (M_END) with a Decline option (O_DECLINE), one possible reason is that
@@ -603,11 +634,11 @@ operator, but is also necessary for further autonomous operations with:
     <t>At a slightly more general level,
     ASAs are not services in themselves, but they automate services. This has a fundamental
 impact on how to design robust ASAs. In general, when an ASA
-observes a particular state [1] of operations of the services/resources it
-controls, it typically aims to improve this state to a better state, say [2].
+observes a particular state (1) of operations of the services/resources it
+controls, it typically aims to improve this state to a better state, say (2).
 Ideally, the ASA is built so that it can ensure that any error encountered
-can still lead to returning to [1] instead of a state [3] which is worse
-than [1]. One example instance of this principle is "make-before-break"
+can still lead to returning to (1) instead of a state (3) which is worse
+than (1). One example instance of this principle is "make-before-break"
 used in reconfiguration of routing protocols in manual operations. This
 principle of operations can accordingly be coded into the operation of an ASA.
 The GRASP dry run option mentioned in <xref target="objdes"/> is another tool
@@ -618,7 +649,7 @@ helpful for this ASA design goal of "test-before-make".
       <name>Security Considerations</name>
       <t>ASAs are intended to run in an environment that is protected by the Autonomic Control Plane
       <xref target="RFC8994"/>, admission to which depends on an initial
-      secure bootstrap process such as <xref target="RFC8995"/>. 
+      secure bootstrap process such as BRSKI <xref target="RFC8995"/>. 
       Such an ACP can provide keying material for mutual authentication between ASAs as well
       as confidential communication channels for messages between ASAs.
       In some deployments,
@@ -631,9 +662,11 @@ helpful for this ASA design goal of "test-before-make".
       management functions. The details are specific to each case, but this has an important security
       implication. An ASA might act as a loophole by which the managed entity could
       penetrate the security boundary of the ANI. Thus, ASAs must be designed to avoid
-      such loopholes, and should if possible operate in an unprivileged mode.
-      In particular, they must use secure techniques and carefully validate any incoming
-      information. This will apply in particular when an ASA interacts with a management
+      loopholes such as passing on executable code, and should if possible operate
+      in an unprivileged mode.
+      In particular, they must use secure coding practices, e.g., carefully validate
+      all incoming information and avoid unnecessary elevation of privilege.
+      This will apply in particular when an ASA interacts with a management
       component such as a NETCONF server.</t>
       
       <t>A similar situation will arise if an ASA acts as a gateway between two
@@ -664,13 +697,16 @@ helpful for this ASA design goal of "test-before-make".
     </section>
     <section anchor="ack" numbered="true" toc="default">
       <name>Acknowledgements</name>
-      <t>Useful comments were received from
+      <t>Valuable comments were received from
       Michael Behringer,
+      Menachem Dodge,
+      <contact fullname="Martin Dürst"/>,
       Toerless Eckert,
+      Thomas Fossati,
       Alex Galis,
       Bing Liu,
       Michael Richardson,
-      and other members of the ANIMA WG.</t>
+      and Rob Wilton.</t>
     </section>
   </middle>
   <back>
@@ -709,7 +745,7 @@ helpful for this ASA design goal of "test-before-make".
         </reference>
         <reference anchor="Huebscher08">
           <front>
-            <title>A survey of autonomic computing--degrees, models, and applications</title>
+            <title>A survey of autonomic computing - degrees, models, and applications</title>
             <seriesInfo name="ACM Computing Surveys (CSUR)" value="Volume 40 Issue 3 DOI: 10.1145/1380584.1380585"/>
             <author initials="M. C." surname="Huebscher"/>
             <author initials="J. A." surname="McCann"/>
@@ -763,9 +799,14 @@ helpful for this ASA design goal of "test-before-make".
     <section anchor="changes" numbered="true" toc="default" removeInRFC="true">
       <name>Change log</name>
       
-      <t>draft-ietf-anima-asa-guidelines-05, 2021-12-xx:</t>
+      <t>draft-ietf-anima-asa-guidelines-05, 2021-12-16:</t>
       <ul spacing="compact">
       <li>Clarified NETCONF wording.</li>
+      <li>Removed &lt;CODE BEGINS&gt; on advice from IETF Trust</li>
+      <li>Noted resource limits in constrained nodes</li>
+      <li>Strengthened text on data integrity in resource management example</li>
+      <li>Strengthen discussion of extensibility of GRASP objectives.</li>
+      <li>Other editorial improvements from IETF Last Call reviews</li>
       </ul>
       
       <t>draft-ietf-anima-asa-guidelines-04, 2021-11-20:</t>
@@ -877,7 +918,10 @@ helpful for this ASA design goal of "test-before-make".
 <li>ACP: Autonomic Control Plane <xref target="RFC8994"/>.</li>
 <li>AN: Autonomic Network, which underlies an autonomic domain.</li>
 <li>ANI: Autonomic Network Infrastructure.</li>
-<li>ASA: Autonomic Service Agent. An agent implemented on an autonomic node that implements an autonomic function, either in part (in the case of a distributed function) or whole.</li>
+<li>ASA: Autonomic Service Agent. An agent installed on an autonomic node that
+    implements an autonomic function, either partially (in the case of a distributed
+    function) or completely.</li>
+<li>BRSKI: Bootstrapping Remote Secure Key Infrastructure <xref target="RFC8995"/>.</li>
 <li>CBOR: Concise Binary Object Representation <xref target="RFC8949"/>.</li>
 <li>GRASP: Generic Autonomic Signaling Protocol <xref target="RFC8990"/>.</li>
 <li>GRASP API: GRASP Application Programming Interface <xref target="RFC8991"/>.</li>
@@ -889,10 +933,10 @@ helpful for this ASA design goal of "test-before-make".
     
     <section anchor="eg" numbered="true" toc="default">
       <name>Example Logic Flows</name>
-      <t>This appendix describes generic logic flows for an Autonomic Service Agent (ASA) for resource management. Note that these are illustrative examples, and in no sense requirements. As long as the rules of GRASP are followed, a real implementation could be different. The reader is assumed to be familiar with GRASP
+      <t>This appendix describes generic logic flows that combine to act as an Autonomic Service Agent (ASA) for resource management. Note that these are illustrative examples, and in no sense requirements. As long as the rules of GRASP are followed, a real implementation could be different. The reader is assumed to be familiar with GRASP
 <xref target="RFC8990"/> and its conceptual API <xref target="RFC8991"/>.
 </t>
-      <t>A complete autonomic function for a resource would consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="RFC8992"/>. In this case, an instance of the ASA would exist in each delegating router.
+      <t>A complete autonomic function for a distributed resource will consist of a number of instances of the ASA placed at relevant points in a network. Specific details will of course depend on the resource concerned. One example is IP address prefix management, as specified in <xref target="RFC8992"/>. In this case, an instance of the ASA will exist in each delegating router.
 </t>
       <t>
 An underlying assumption is that there is an initial source of the resource in question, referred to here as an origin ASA. The other ASAs, known as delegators, obtain supplies of the resource from the origin, and then delegate quantities of the resource to consumers that request it, and recover it when no longer needed.
@@ -909,10 +953,10 @@ Both as an origin and as a delegator, when its pool is low it seeks quantities o
 In theory a network could include any number of origins and any number of delegators, with the only condition being that each origin's initial resource pool is unique. A realistic scenario is to have exactly one origin and as many delegators as you like. A scenario with no origin is useless.
 </t>
       <t>
-An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If an origin exits, its entire spare pool is lost. The logic for using stable storage and for crash recovery is not included in the pseudocode below.
+An implementation requirement is that resource pools are kept in stable storage. Otherwise, if a delegator exits for any reason, all the resources it has obtained or delegated are lost. If an origin exits, its entire spare pool is lost. The logic for using stable storage and for crash recovery is not included in the pseudocode below, which focuses on communication between ASAs. Since GRASP operations are not intrinsically idempotent, data integrity during failure scenarios is the responsibility of the ASA designer. This is a complex topic in its own right that is not discussed in the present document.
 </t>
       <t>
-The description below does not implement GRASP's 'dry run' function. That would require temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout expires.
+The description below does not implement GRASP's 'dry run' function. That would require temporarily marking any resource handed out in a dry run negotiation as reserved, until either the peer obtains it in a live run, or a suitable timeout occurs.
 </t>
       <t>
 The main data structures used in each instance of the ASA are:
@@ -921,7 +965,7 @@ The main data structures used in each instance of the ASA are:
         <li>The resource_pool, for example an ordered list of available resources. Depending on the nature of the resource, units of resource are split when appropriate, and a background garbage collector recombines split resources if they are returned to the pool.
 </li>
         <li>
-The delegated_list, where a delegator stores the resources it has given to consumers routers.
+The delegated_list, where a delegator stores the resources it has given to subsidiary devices.
 </li>
       </ul>
       <t>
@@ -944,8 +988,6 @@ where the value will be, for example, a JSON object defining the applicable para
 In the outline logic flows below, these objectives are represented simply by their names.
 </t>
       <artwork name="" type="" align="left" alt=""><![CDATA[
-<CODE BEGINS>
-
 MAIN PROGRAM:
 
 Create empty resource_pool (and an associated lock)
@@ -964,8 +1006,8 @@ if not origin:
     Obtain value of EX1.Params from GRASP flood or synchronization
     Start DELEGATOR thread
 Start GARBAGE_COLLECTOR thread
+good_peer = none
 do forever:
-    good_peer = none
     if resource_pool is low:
         Calculate amount A of resource needed
         Discover peers using GRASP M_DISCOVER / M_RESPONSE
@@ -974,23 +1016,23 @@ do forever:
         else:
             peer =  #any choice among peers
             grasp.request_negotiate("EX1.Resource", peer)
-            i.e., send M_REQ_NEG
+            #i.e., send negotiation request
             Wait for response (M_NEGOTIATE, M_END or M_WAIT)
             if OK:
                 if offered amount of resource sufficient:
                     Send M_END + O_ACCEPT #negotiation succeeded
                     Add resource to pool
-                    good_peer = peer
+                    good_peer = peer      #remember this choice
                 else:
                     Send M_END + O_DECLINE #negotiation failed
-    sleep() #or periodic timer, depending on application scenario
+    sleep() #periodic timer suitable for application scenario
 ]]></artwork>
       <artwork name="" type="" align="left" alt=""><![CDATA[
 MAIN_NEGOTIATOR thread:
 
 do forever:
     grasp.listen_negotiate("EX1.Resource")
-    i.e., wait for M_REQ_NEG
+    #i.e., wait for negotiation request
     Start a separate new NEGOTIATOR thread for requested amount A
 ]]></artwork>
       <artwork name="" type="" align="left" alt=""><![CDATA[
@@ -1019,8 +1061,8 @@ do forever:
     if request:
         Get resource amount A from resource_pool
         if OK:
-            Delegate resource to consumer
-            Record in delegated_list
+            Delegate resource to consumer #atomic
+            Record in delegated_list      #operation
         else:
             Signal failure to consumer
             Signal main thread that resource_pool is low
@@ -1040,7 +1082,7 @@ FLOODER thread:
 
 do forever:
     Send M_FLOOD message for EX1.Params
-    sleep() #or periodic timer, depending on application scenario
+    sleep() #periodic timer suitable for application scenario
 
 ]]></artwork>
       <artwork name="" type="" align="left" alt=""><![CDATA[
@@ -1049,9 +1091,7 @@ GARBAGE_COLLECTOR thread:
 do forever:
     Search resource_pool for adjacent resources
     Merge adjacent resources
-    sleep() #or periodic timer, depending on application scenario
-    
-<CODE ENDS>
+    sleep() #periodic timer suitable for application scenario
 ]]></artwork>
     </section>
   </back>
