@@ -778,7 +778,7 @@ helpful for this ASA design goal of "test-before-make".
       <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.irtf-nmrg-ibn-concepts-definitions.xml"/>
         <reference anchor="NFV" target="http://portal.etsi.org/NFV/NFV_White_Paper.pdf">
           <front>
-            <title>Network Functions Virtualisation – Introductory White Paper</title>
+            <title>Network Functions Virtualisation - Introductory White Paper</title>
             <seriesInfo name="SDN and OpenFlow World Congress, Darmstadt, Germany" value="1-16"/>
             <author surname="ETSI"/>
             <date month="October" year="2012"/>
