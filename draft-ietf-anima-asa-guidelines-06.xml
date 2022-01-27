@@ -10,11 +10,11 @@
 <!-- Change to "yes" if someone has disclosed IPR for the draft -->
 <?rfc compact="yes"?>
 <!-- This defines the specific filename and version number of your draft (and inserts the appropriate IETF boilerplate -->
-<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-ietf-anima-asa-guidelines-07" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
+<rfc xmlns:xi="http://www.w3.org/2001/XInclude" category="info" docName="draft-ietf-anima-asa-guidelines-06" ipr="trust200902" obsoletes="" updates="" submissionType="IETF" xml:lang="en" tocInclude="true" symRefs="true" sortRefs="true" version="3">
   <!-- xml2rfc v2v3 conversion 2.37.3 -->
   <front>
     <title abbrev="ASA Guidelines">Guidelines for Autonomic Service Agents</title>
-    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-asa-guidelines-07"/>
+    <seriesInfo name="Internet-Draft" value="draft-ietf-anima-asa-guidelines-06"/>
     
     <author fullname="Brian Carpenter" initials="B. E." surname="Carpenter">
       <organization abbrev="Univ. of Auckland"/>
@@ -177,7 +177,7 @@
       Different programming environments support asynchronicity in different ways. In this document,
       we use an explicit multi-threading model to describe operations. This is illustrative,
       and alternatives to multi-threading are discussed in detail
-      in connection with the GRASP API (see <xref target="api"/>).
+      in connection with the GRASP API <xref target="api"/>.
       </t>
       <t>A typical ASA will have a main thread that performs various initial housekeeping actions such as:
       </t>
@@ -848,11 +848,6 @@ helpful for this ASA design goal of "test-before-make".
     </references>
     <section anchor="changes" numbered="true" toc="default" removeInRFC="true">
       <name>Change log</name>
-      
-      <t>draft-ietf-anima-asa-guidelines-07, 2022-xx-xx:</t>
-      <ul spacing="compact">
-      <li>Typo fix</li>
-      </ul>
       
       <t>draft-ietf-anima-asa-guidelines-06, 2022-01-27:</t>
       <ul spacing="compact">
